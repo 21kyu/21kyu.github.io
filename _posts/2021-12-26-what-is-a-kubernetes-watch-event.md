@@ -3,7 +3,7 @@ title: Kubernetes의 Watch 이벤트는 어떻게 동작하는가?
 author: wq
 name: Wongyu Lee
 link: https://github.com/kyu21
-date: 2021-12-26 07:45:00 +0900
+date: 2021-12-26 08:00:00 +0900
 categories: [kubernetes, analyze]
 tags: [kubernetes, watch, event]
 render_with_liquid: false
@@ -16,7 +16,7 @@ render_with_liquid: false
 Kubernetes에서는 이러한 Watch 기능을 사용하면 API server로부터 데이터를 지속적으로 전달받는다는걸 알겠는데, 정확히 어떠한 방식으로 동작이 되는지 궁금해졌으므로 차근히 확인하면서 여기에 정리해놓고자 한다.
 혹 글 내용에 대한 수정이 필요하다면 계속해서 업데이트할 예정이다.
 
-*Last updated: 2021/12/26 07:45*
+*Last updated: 2021/12/26 08:00*
 
 ### Prerequisites
 
@@ -251,8 +251,8 @@ client-go의 clientSet을 통해 `Watch()` Method를 호출해도 그림 상의 
 Kubernetes에서의 Watch 이벤트는 어떤 방식으로 구현이 되어 있으며 어떻게 동작하는지 어느정도 만족스럽게 정리해보았다.
 예상했던 바와 같이, 클라이언트와 API server는 Go-based HTTP streaming via HTTP & websocket으로 리소스에 대한 add/update/delete 타입의 이벤트를 전달하고 받고 있었다.
 
-예를 들어 Pod가 생성되거나 변경되거나 삭제가 되면 일련의 이벤트가 발생되어 전달을 받고 해당 이벤트에 대한 부가적인 처리를 할 수 있다는 아주 기본적이면서 당연한 말이긴 한데,
-Kubernetes에서는 이러한 로직을 어떻게 구현했는지 배우면 추후에 도움이 되지 않을까 싶어 다음 순으로는 Kubernetes의 `Event`에 대해서 정리해보고자 한다.
+예를 들어 Pod가 생성되거나 변경되거나 삭제가 되면 일련의 이벤트가 발생되어 전달을 받고 해당 이벤트에 대한 부가적인 처리를 할 수 있다는 아주 기본적이면서 당연한 말이긴 하다.
+Kubernetes에서는 이벤트를 내부적으로 어떤 방식으로 처리하게 했는지에 대해 알게 되면 추후에 도움이 되지 않을까 싶어, 다음 순으로는 Kubernetes의 `Event`에 대해서 정리해보고자 한다.
 
 <div style="text-align: center; margin-top: 100px; margin-bottom: 50px">- 끝 -</div>
 
