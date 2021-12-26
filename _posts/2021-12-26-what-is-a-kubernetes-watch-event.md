@@ -163,6 +163,7 @@ func (r *Request) Watch(ctx context.Context) (watch.Interface, error) {
 	}
 }
 ```
+{: file="request.go" }
 
 `watch.Interface`의 prototype들을 구현한 구현체 중 하나인 StreamWatcher를 반환하는 [Watch(context.Context)](https://github.com/kubernetes/client-go/blob/v0.23.1/rest/request.go#L671) Method다.
 Golang을 공부하며 그동안 예제로 보아왔던 HTTP streaming 클라이언트측 코드 구현과 매우 흡사한걸 확인할 수 있다.
@@ -181,6 +182,7 @@ func NewStreamWatcher(d Decoder, r Reporter) *StreamWatcher {
 	return sw
 }
 ```
+{: file="streamwatcher.go" }
 
 Goroutine으로 실행되는 `sw.receive()`에서 Decoder로부터 Type과 Object를 얻고 result channel로 전송한다.
 이러한 result channel은 `ResultChan()` Method를 통해 가져올 수 있으므로, 변경 감지가 필요한 클라이언트는 이를 사용해 channel로부터 [Event](https://pkg.go.dev/k8s.io/apimachinery/pkg/watch#Event) 를 수신할 수 있게 되는 것이다.
@@ -229,6 +231,7 @@ func (s *WatchServer) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	}
 }
 ```
+{: file="watch.go" }
 
 우선 요청에서 Connection과 Upgrade 헤더를 봐서 WebSocket 연결 요청인지 확인한다.
 맞다면 WebSocket connection을 통해, 아니라면 응답의 Transfer-Encoding 헤더를 *chunked*로 설정하여 streaming HTTP connection을 통해서 일련의 인코딩된 이벤트를 클라이언트에게 제공한다.
@@ -242,8 +245,10 @@ func (s *WatchServer) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 ## Watch event flow
 
+개략적인 Watch 이벤트의 흐름은 **그림 1**과 같다.
 ![Watch event flow](/images/watch-event-flow.png)
-개략적인 Watch 이벤트의 흐름은 이렇다.
+_그림 1. Watch event flow_
+
 client-go의 clientSet을 통해 `Watch()` Method를 호출해도 그림 상의 `Request.Watch`에 도달하는 것은 동일하다.
 
 ## Conclusion
@@ -258,4 +263,4 @@ Kubernetes에서는 이벤트를 내부적으로 어떤 방식으로 처리하�
 
 ---
 [^1]: kubectl은 -v 또는 --v 플래그를 통해 로그 수준을 지정할 수 있도록 지원하고 있다. [kubectl-output-verbosity-and-debugging](https://kubernetes.io/docs/reference/kubectl/cheatsheet/#kubectl-output-verbosity-and-debugging) 에서 자세히 확인할 수 있다.
-[^2]: Kubernetes에서는 *Watch*보다는 *Informer* 사용이 권장된다.
+[^2]: *Watch*보다는 *Informer* 사용이 권장된다.
