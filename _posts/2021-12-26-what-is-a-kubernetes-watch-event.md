@@ -40,7 +40,7 @@ pod/nginx created
 ```
 {: .nolineno}
 
-이제 다시 *watch*를 걸어뒀던 shell로 돌아가면 `nginx` pod의 상태(status)가 변하는 과정을 관찰할 수 있게 된다.
+이제 다시 *watch*를 걸어뒀던 shell로 돌아가면 `nginx` pod의 상태(status)가 변하는 과정을 관찰할 수 있다.
 ```shell
 NAME    READY   STATUS              RESTARTS   AGE
 nginx   0/1     Pending             0          0s
@@ -78,7 +78,7 @@ nginx-2   1/1     Running             0          5s
 2. Pod List에 대한 응답을 받고 다시 GET 요청을 한다. 이 때, 응답의 Boby에 있었던 resourceVersion과 함께 watch도 쿼리 파라미터로 같이 보낸다.
 
 Kubectl이 보여주는 로그를 통해 HTTP GET 요청에 `?watch` 쿼리 파라미터를 추가해 보내게 되면
-Kubernetes는 이를 *get* 동작이 아닌 *watch* 동작으로 받아들이게 된다는 걸 어림잡아 알게 되었다.
+Kubernetes는 이를 *get* 동작이 아닌 *watch* 동작으로 받아들이게 된다는 걸 어림잡아 알게 됐다.
 
 이는 Reflector가 구현해둔 [ListAndWatch](https://pkg.go.dev/k8s.io/client-go/tools/cache#Reflector.ListAndWatch) Method의 동작과 정확히 일치하는 흐름이다.
 왜 2번의 GET 요청을 하도록 구현되었을까? 그리고 `resourceVersion`은 무엇일까?
