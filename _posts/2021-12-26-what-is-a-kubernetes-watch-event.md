@@ -1,9 +1,9 @@
 ---
-title: Kubernetes의 Watch 이벤트는 어떻게 동작하는가?
+title: Kubernetes의 Watch event는 어떻게 동작하는가
 author: wq
 name: Wongyu Lee
 link: https://github.com/kyu21
-date: 2021-12-26 11:00:00 +0900
+date: 2021-12-26 16:00:00 +0900
 categories: [kubernetes, analyze]
 tags: [kubernetes, watch, event]
 render_with_liquid: false
@@ -11,7 +11,7 @@ render_with_liquid: false
 
 대부분 이미 Kubernetes의 Watch 기능을 사용해봤을 것이다.
 나는 Deployment 등을 배포하고 Pod의 배포 상태를 계속 보고 싶을 때 Kubectl에 *-w* 옵션을 추가해 확인하곤 했다.
-또한 Controller를 구현할 때에도 Watch() Method를 사용하면 결과적으로 channel을 통해 이벤트를 받아올 수 있어 변경 감지에 따른 동작을 정의만 해주면 됐다.
+또한 Controller를 구현할 때에도 Watch() Method를 사용하면 결과적으로 channel을 통해 event를 받아올 수 있어 변경 감지에 따른 동작을 정의만 해주면 됐다.
 
 Kubernetes에서는 이러한 Watch 기능을 사용하면 API server로부터 데이터를 지속적으로 전달받는다는걸 알겠는데, 정확히 어떠한 방식으로 동작되는지 궁금해졌으므로 차근히 확인하면서 여기에 정리해놓고자 한다.
 혹 글 내용에 대한 수정이 필요하다면 계속해서 업데이트할 예정이다.
@@ -98,7 +98,7 @@ etcd와 같은 persistence layer에 영속화되는 순간에 대한 상태를 �
 *: 상태 변경에 따른 resourceVersion 변화*
 
 Kubectl과 같은 클라이언트들은 object 또는 collection에 대한 초기 요청(*get* 또는 *list*)의 응답으로 받은 `resourceVersion`을 사용하여 감시 요청(*watch*)을 하게 되면,
-이후에 발생되는 *Create*, *Update*, *Delete* 이벤트와 같은 후속 변경 사항을 구독할 수 있다.
+이후에 발생되는 *Create*, *Update*, *Delete* event와 같은 후속 변경 사항을 구독할 수 있다.
 이러한 내용들 때문에 2번의 요청이 요구되는 것이다.
 resourceVersion을 얻기 위해 첫번째 GET 요청을 하며, 해당 요청에 포함된 resourceVersion과 함께 두번째 GET 요청을 하면서 리소스에 대한 정확한 구독 시점이 결정되는 것이다.
 
@@ -109,12 +109,12 @@ resourceVersion을 얻기 위해 첫번째 GET 요청을 하며, 해당 요청�
 |-------|--------|---------|
 | Get State and Start at Most Recent | Get State and Start at Any | Start at Exact |
 
-이제는 *watch* 이벤트의 동작에 대해서 어느정도 알긴 하겠다. 여기에 추가로, 어떤 방식으로 Kubernetes가 이벤트를 주고 클라이언트가 받을 수 있게 되는지 구현에 대한 정리가 되면 더 명확해질 것으로 보인다.
+이제는 *watch event*의 동작에 대해서 어느정도 알긴 하겠다. 여기에 추가로, 어떤 방식으로 Kubernetes가 event를 주고 클라이언트가 받을 수 있게 되는지 구현에 대한 정리가 되면 더 명확해질 것으로 보인다.
 
 ## Client-side Implementation
 
 클라이언트의 구현을 따라가보자. Kubectl의 [watch](https://github.com/kubernetes/kubectl/blob/d7da6ad9f193e3afdc754527c0a5ac9390c053fb/pkg/cmd/get/get.go#L638) 구현에서,
-*watch* 요청이 오면 최종적으로 `request.go`에서 생성하는 `watch.go`의 `watch.Interface`에서 channel을 꺼내 이벤트가 도착할 때마다 출력한다.
+*watch* 요청이 오면 최종적으로 `request.go`에서 생성하는 `watch.go`의 `watch.Interface`에서 channel을 꺼내 event가 도착할 때마다 출력한다.
 커스텀한 Controller 또는 Webhook을 구현할 경우 리소스에 대한 변경 감지가 필요한 상황(*e.g., Pod 생성 요청을 하고 생성이 완료될 때까지 대기*)이면 clientSet의 client를 통해 원하는 리소스에 대해 Watch verb를 요청해 원하는 로직을 구현할 수도 있는데[^2],
 이 때 얻게 되는 `watch.Interface` 역시 같은 방식으로 만들어지는 객체이다.
 
@@ -136,7 +136,7 @@ for event := range watch.ResultChan() {
 ```
 
 간단하게는 이러한 방식으로 client 객체를 통해 변경 감지가 필요한 리소스의 `watch.Interface`를 받을 수 있다.
-`watch.ResultChan()`으로 이벤트를 전달받을 수 있으며 Type에 따라 필요한 로직을 작성하면 된다.
+`watch.ResultChan()`으로 event를 전달받을 수 있으며 Type에 따라 필요한 로직을 작성하면 된다.
 
 클라이언트 Watcher를 위한 코드는 내부적으로 이런 형태로 구현돼 있다.
 
@@ -234,9 +234,9 @@ func (s *WatchServer) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 {: file="watch.go" }
 
 우선 요청에서 Connection과 Upgrade 헤더를 봐서 WebSocket 연결 요청인지 확인한다.
-맞다면 WebSocket connection을 통해, 아니라면 응답의 Transfer-Encoding 헤더를 *chunked*로 설정하여 streaming HTTP connection을 통해서 일련의 인코딩된 이벤트를 클라이언트에게 제공한다.
+맞다면 WebSocket connection을 통해, 아니라면 응답의 Transfer-Encoding 헤더를 *chunked*로 설정하여 streaming HTTP connection을 통해서 일련의 인코딩된 event를 클라이언트에게 제공한다.
 
-코드를 보면 WatchServer 또한 특정 channel로부터 이벤트를 수신해서 최종적으로 클라이언트에게 송신하는 중간 전달자임을 확인할 수 있다.
+코드를 보면 WatchServer 또한 특정 channel로부터 event를 수신해서 최종적으로 클라이언트에게 송신하는 중간 전달자임을 확인할 수 있다.
 
 `ch := s.Watching.ResultChan()`
 
@@ -245,7 +245,7 @@ func (s *WatchServer) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 ## Watch event flow
 
-개략적인 Watch 이벤트의 흐름은 **그림 1**과 같다.
+개략적인 Watch event의 흐름은 **그림 1**과 같다.
 ![Watch event flow](/images/watch-event-flow.png)
 _그림 1. Watch event flow_
 
@@ -253,11 +253,11 @@ client-go의 clientSet을 통해 `Watch()` Method를 호출해도 그림 상의 
 
 ## Conclusion
 
-Kubernetes에서의 Watch 이벤트는 어떤 방식으로 구현돼 있는지 어떻게 동작하는지 어느정도 정리해보았다.
-예상했던 바와 같이 클라이언트와 API server는 Go-based HTTP streaming via HTTP & websocket으로 리소스에 대한 add/update/delete 타입의 이벤트를 전달하고 받고 있었다.
+Kubernetes에서의 Watch event는 어떤 방식으로 구현돼 있는지 어떻게 동작하는지 어느정도 정리해보았다.
+예상했던 바와 같이 클라이언트와 API server는 Go-based HTTP streaming via HTTP & websocket으로 리소스에 대한 add/update/delete 타입의 event를 전달하고 받고 있었다.
 
-예를 들어 Pod가 생성되거나 변경되거나 삭제가 되면 일련의 이벤트가 발생되어 전달을 받고 해당 이벤트에 대한 부가적인 처리를 할 수 있다는 아주 기본적이면서 당연한 말이긴 하다.
-Kubernetes에서는 이벤트를 내부적으로 어떤 방식으로 처리하게 했는지에 대해 알게 되면 추후에 도움이 되지 않을까 싶어서 다음 순으로는 Kubernetes의 `Event`에 대해서 정리해보고자 한다.
+예를 들어 Pod가 생성되거나 변경되거나 삭제가 되면 일련의 event가 발생되어 전달을 받고 해당 event에 대한 부가적인 처리를 할 수 있다는 아주 기본적이면서 당연한 말이긴 하다.
+Kubernetes에서는 event를 내부적으로 어떤 방식으로 처리하게 했는지에 대해 알게 되면 추후에 도움이 되지 않을까 싶어서 다음 순으로는 Kubernetes의 `Event`에 대해서 정리해보고자 한다.
 
 <div style="text-align: center; margin-top: 100px; margin-bottom: 50px">- 끝. -</div>
 
