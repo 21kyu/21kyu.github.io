@@ -9,7 +9,7 @@ tags: [kubernetes, watch, event]
 render_with_liquid: false
 ---
 
-Kubernetes는 Pod, Deployment, Service와 같은 리소스를 모니터링하고 관련 이벤트를 추적할 수 있는 Watch 개념을 가지고 있다.
+Kubernetes는 Pod, Deployment, Service와 같은 Resource를 모니터링하고 관련 Event를 추적할 수 있는 Watch 개념을 가지고 있다.
 
 대부분 이미 Kubernetes의 Watch 기능을 사용해봤을 것이다.
 나는 Deployment 등을 배포하고 Pod의 배포 상태를 계속 보고 싶을 때 Kubectl에 *-w* 옵션을 추가해 확인하곤 했다.
@@ -116,7 +116,7 @@ etcd와 같은 persistence layer에 영속화되는 순간에 대한 상태를 �
 Kubectl과 같은 클라이언트들은 object 또는 collection에 대한 초기 요청(*get* 또는 *list*)의 응답으로 받은 `resourceVersion`을 사용하여 감시 요청(*watch*)을 하게 되면,
 이후에 발생되는 *Create*, *Update*, *Delete* event와 같은 후속 변경 사항을 구독할 수 있다.
 이러한 내용들 때문에 2번의 요청이 요구되는 것이다.
-resourceVersion을 얻기 위해 첫번째 GET 요청을 하며, 해당 요청에 포함된 resourceVersion과 함께 두번째 GET 요청을 하면서 리소스에 대한 정확한 구독 시점이 결정되는 것이다.
+resourceVersion을 얻기 위해 첫번째 GET 요청을 하며, 해당 요청에 포함된 resourceVersion과 함께 두번째 GET 요청을 하면서 resource에 대한 정확한 구독 시점이 결정되는 것이다.
 
 *watch* 요청 시 전달되는 `resourceVersion`에 따라 변경 감지의 시작점이 달라지게 되는데
 [Semantics for watch](https://kubernetes.io/docs/reference/using-api/api-concepts/#semantics-for-watch) 에서 보다 자세한 내용을 확인할 수 있다.
@@ -131,7 +131,7 @@ resourceVersion을 얻기 위해 첫번째 GET 요청을 하며, 해당 요청�
 
 클라이언트의 구현을 따라가보자. Kubectl의 [watch](https://github.com/kubernetes/kubectl/blob/d7da6ad9f193e3afdc754527c0a5ac9390c053fb/pkg/cmd/get/get.go#L638) 구현에서,
 *watch* 요청이 오면 최종적으로 `request.go`에서 생성하는 `watch.go`의 `watch.Interface`에서 channel을 꺼내 event가 도착할 때마다 출력한다.
-커스텀한 Controller 또는 Webhook을 구현할 경우 리소스에 대한 변경 감지가 필요한 상황(*e.g., Pod 생성 요청을 하고 생성이 완료될 때까지 대기*)이면 clientSet의 client를 통해 원하는 리소스에 대해 Watch verb를 요청해 원하는 로직을 구현할 수도 있는데[^2],
+커스텀한 Controller 또는 Webhook을 구현할 경우 resource에 대한 변경 감지가 필요한 상황(*e.g., Pod 생성 요청을 하고 생성이 완료될 때까지 대기*)이면 clientSet의 client를 통해 원하는 resource에 대해 Watch verb를 요청해 원하는 로직을 구현할 수도 있는데[^2],
 이 때 얻게 되는 `watch.Interface` 역시 같은 방식으로 만들어지는 객체이다.
 
 ```go
@@ -151,7 +151,7 @@ for event := range watch.ResultChan() {
 }
 ```
 
-간단하게는 이러한 방식으로 client 객체를 통해 변경 감지가 필요한 리소스의 `watch.Interface`를 받을 수 있다.
+간단하게는 이러한 방식으로 client 객체를 통해 변경 감지가 필요한 resource의 `watch.Interface`를 받을 수 있다.
 `watch.ResultChan()`으로 event를 전달받을 수 있으며 Type에 따라 필요한 로직을 작성하면 된다.
 
 클라이언트 Watcher를 위한 코드는 내부적으로 이런 형태로 구현돼 있다.
@@ -270,7 +270,7 @@ client-go의 clientSet을 통해 `Watch()` Method를 호출해도 그림 상의 
 ## Conclusion
 
 Kubernetes에서의 Watch event는 어떤 방식으로 구현돼 있는지 어떻게 동작하는지 어느정도 정리해보았다.
-예상했던 바와 같이 클라이언트와 API server는 Go-based HTTP streaming via HTTP & websocket으로 리소스에 대한 add/update/delete 타입의 event를 전달하고 받고 있었다.
+예상했던 바와 같이 클라이언트와 API server는 Go-based HTTP streaming via HTTP & websocket으로 resource에 대한 add/update/delete 타입의 event를 전달하고 받고 있었다.
 
 예를 들어 Pod가 생성되거나 변경되거나 삭제가 되면 일련의 event가 발생되어 전달을 받고 해당 event에 대한 부가적인 처리를 할 수 있다는 아주 기본적이면서 당연한 말이긴 하다.
 Kubernetes에서는 event를 내부적으로 어떤 방식으로 처리하게 했는지에 대해 알게 되면 추후에 도움이 되지 않을까 싶어서 다음 순으로는 Kubernetes의 `Event`에 대해서 정리해보고자 한다.
