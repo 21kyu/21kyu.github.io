@@ -33,7 +33,13 @@ Kubernetes에서는 이러한 Watch 기능을 사용하면 API server로부터 �
 
 ## Watch pods via kubectl
 
-먼저 Watch 기능을 사용해보도록 하자.
+최근에 감명 깊게 읽은 책인 [Programming Kubernetes](https://www.oreilly.com/library/view/programming-kubernetes/9781492047094/)에서는 Watch event를 아래와 같이 설명하고 있다.
+
+* Watch events are sent through streaming HTTP connections between the API server and controllers to drive informers.
+
+API server는 클라이언트인 Controller와 streaming HTTP connection을 통해 데이터를 주고 받는 형태라는 말인데,
+이는 또 다른 클라이언트인 Kubectl과도 같은 방식으로 데이터를 주고 받을거라 이해할 수 있을 듯 하다.
+빠른 확인을 위해 먼저 Kubectl의 Watch 기능을 사용해보도록 하자.
 익히 알고 있는 바와 같이 한 줄의 Kubectl command로 cluster 상에 있는 (default namespace의) Pod들을 감시할 수 있게 된다.
 ```shell
 ❯ kubectl get pods --watch
