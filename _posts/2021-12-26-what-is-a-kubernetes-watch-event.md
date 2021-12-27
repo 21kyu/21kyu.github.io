@@ -9,7 +9,7 @@ tags: [kubernetes, watch, event]
 render_with_liquid: false
 ---
 
-Kubernetes는 Pod, Deployment, Service와 같은 Resource를 모니터링하고 관련 Event를 추적할 수 있는 Watch 개념을 가지고 있다.
+Kubernetes는 pods, deployments, services와 같은 resource들을 모니터링하고 관련 event를 추적할 수 있는 Watch 개념을 가지고 있다.
 
 대부분 이미 Kubernetes의 Watch 기능을 사용해봤을 것이다.
 나는 Deployment 등을 배포하고 Pod의 배포 상태를 계속 보고 싶을 때 Kubectl에 *-w* 옵션을 추가해 확인하곤 했다.
@@ -18,7 +18,7 @@ Kubernetes는 Pod, Deployment, Service와 같은 Resource를 모니터링하고 
 Kubernetes에서는 이러한 Watch 기능을 사용하면 API server로부터 데이터를 지속적으로 전달받는다는걸 알겠는데, 정확히 어떠한 방식으로 동작되는지 궁금해졌으므로 차근히 확인하면서 여기에 정리해놓고자 한다.
 혹 글 내용에 대한 수정이 필요하다면 계속해서 업데이트할 예정이다.
 
-*Last updated: 2021/12/27*
+*Last updated: 2021/12/28*
 
 ### What is a Kubernetes Watch Event?
 
@@ -257,7 +257,7 @@ func (s *WatchServer) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 `ch := s.Watching.ResultChan()`
 
 음.. Watching 객체도 `watch.Interface`로 WatchServer가 생성될 때 외부에서 주입받아 사용이 되는데 이건 또 어디에서 오는걸까?
-이 부분은 다음에 Kubernetes의 `Event`에 대해 면밀히 정리를 해보면서 추가로 확인해보고자 한다.
+이 부분은 다음에 Kubernetes의 `Event`에 대해 면밀히 정리를 해보면서 추가로 확인해보도록 하자.
 
 ## Watch event flow
 
@@ -279,4 +279,4 @@ Kubernetes에서는 event를 내부적으로 어떤 방식으로 처리하게 �
 
 ---
 [^1]: kubectl은 -v 또는 --v 플래그를 통해 로그 수준을 지정할 수 있도록 지원하고 있다. [kubectl-output-verbosity-and-debugging](https://kubernetes.io/docs/reference/kubectl/cheatsheet/#kubectl-output-verbosity-and-debugging) 에서 자세히 확인할 수 있다.
-[^2]: *Watch*보다는 *Informer* 사용이 권장된다.
+[^2]: *Watch*보다는 *Informer* 사용이 권장된다. 이유는 추후에 알아보도록 하자.
