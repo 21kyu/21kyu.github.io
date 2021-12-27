@@ -9,6 +9,8 @@ tags: [kubernetes, watch, event]
 render_with_liquid: false
 ---
 
+Kubernetes는 Pod, Deployment, Service와 같은 리소스를 모니터링하고 관련 이벤트를 추적할 수 있는 Watch 개념을 가지고 있다.
+
 대부분 이미 Kubernetes의 Watch 기능을 사용해봤을 것이다.
 나는 Deployment 등을 배포하고 Pod의 배포 상태를 계속 보고 싶을 때 Kubectl에 *-w* 옵션을 추가해 확인하곤 했다.
 또한 Controller를 구현할 때에도 Watch() Method를 사용하면 결과적으로 channel을 통해 event를 받아올 수 있어 변경 감지에 따른 동작을 정의만 해주면 됐다.
@@ -33,7 +35,7 @@ Kubernetes에서는 이러한 Watch 기능을 사용하면 API server로부터 �
 
 ## Watch pods via kubectl
 
-최근에 감명 깊게 읽은 책인 [Programming Kubernetes](https://www.oreilly.com/library/view/programming-kubernetes/9781492047094/)에서는 Watch event를 아래와 같이 설명하고 있다.
+최근 감명 깊게 읽은 책인 [Programming Kubernetes](https://www.oreilly.com/library/view/programming-kubernetes/9781492047094/)에서는 Watch event를 아래와 같이 설명하고 있다.
 
 * *Watch events are sent through streaming HTTP connections between the API server and controllers to drive informers.*
 
