@@ -16,7 +16,7 @@ render_with_liquid: false
 Kubernetes에서는 이러한 Watch 기능을 사용하면 API server로부터 데이터를 지속적으로 전달받는다는걸 알겠는데, 정확히 어떠한 방식으로 동작되는지 궁금해졌으므로 차근히 확인하면서 여기에 정리해놓고자 한다.
 혹 글 내용에 대한 수정이 필요하다면 계속해서 업데이트할 예정이다.
 
-*Last updated: 2021/12/26*
+*Last updated: 2021/12/27*
 
 ### What is a Kubernetes Watch Event?
 
@@ -35,7 +35,7 @@ Kubernetes에서는 이러한 Watch 기능을 사용하면 API server로부터 �
 
 최근에 감명 깊게 읽은 책인 [Programming Kubernetes](https://www.oreilly.com/library/view/programming-kubernetes/9781492047094/)에서는 Watch event를 아래와 같이 설명하고 있다.
 
-* Watch events are sent through streaming HTTP connections between the API server and controllers to drive informers.
+* *Watch events are sent through streaming HTTP connections between the API server and controllers to drive informers.*
 
 API server는 클라이언트인 Controller와 streaming HTTP connection을 통해 데이터를 주고 받는 형태라는 말인데,
 이는 또 다른 클라이언트인 Kubectl과도 같은 방식으로 데이터를 주고 받을거라 이해할 수 있을 듯 하다.
