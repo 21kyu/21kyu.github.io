@@ -23,8 +23,9 @@ Kubernetes에서는 이러한 Watch 기능을 사용하면 API server로부터 �
 ### What is a Kubernetes Watch Event?
 
 - [x] 1. **Watch Event**: Kubernetes의 Watch event는 어떻게 동작하는가
-- [ ] 2. Event
+- [ ] 2. Resource Handler
 - [ ] 3. Informer
+- [ ] 4. Event
 
 ---
 
@@ -273,7 +274,7 @@ Kubernetes에서의 Watch event는 어떤 방식으로 구현돼 있는지 어�
 예상했던 바와 같이 클라이언트와 API server는 Go-based HTTP streaming via HTTP & websocket으로 resource에 대한 add/update/delete 타입의 event를 전달하고 받고 있었다.
 
 예를 들어 Pod가 생성되거나 변경되거나 삭제가 되면 일련의 event가 발생되어 전달을 받고 해당 event에 대한 부가적인 처리를 할 수 있다는 아주 기본적이면서 당연한 말이긴 하다.
-Kubernetes에서는 event를 내부적으로 어떤 방식으로 처리하게 했는지에 대해 알게 되면 추후에 도움이 되지 않을까 싶어서 다음 순으로는 Kubernetes의 `Event`에 대해서 정리해보고자 한다.
+내부적으로 event를 어떤 방식으로 처리하게 했는지에 대해 알면 Kubernetes와 더 가까워질 수 있을 것이다. 다음 순으로 API Server에서 Watch 요청이 어떻게 핸들링되는지, **Watch Server**가 생성되기까지의 과정을 확인해보자.
 
 <div style="text-align: center; font-weight: bold; margin-top: 100px; margin-bottom: 50px">끝.</div>
 
