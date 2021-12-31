@@ -29,7 +29,7 @@ render_with_liquid: false
 ## API Server analysis
 
 [server.go](https://github.com/kubernetes/kubernetes/blob/7c013c3f64db33cf19f38bb2fc8d9182e42b0b7b/cmd/kube-apiserver/app/server.go#L84) 를 보면
-여느 kubernetes component들과 마찬가지로 kube-apiserver는 cobra.Command를 사용해 시작되는걸로 확인이 된다.
+여느 kubernetes component들과 마찬가지로 kube-apiserver는 cobra.Command [^1] 를 사용해 시작되는걸로 확인이 된다.
 
 ```go
 func NewAPIServerCommand() *cobra.Command {
@@ -62,7 +62,7 @@ func NewAPIServerCommand() *cobra.Command {
 
 ### ServerChain
 
-completedOptions를 설정하고 해당 옵션이 유효한지를 확인한다.
+cobra.Command의 RunE function에서 completedOptions를 설정하고 해당 옵션이 유효한지 확인한다.
 그리고 지정된 APIServer를 생성하고 실행하는 `Run()` method를 호출한다.
 `Run()` method 내부에서 호출되는 `CreateServerChain()` method를 살펴보자.
 
@@ -89,8 +89,8 @@ func CreateServerChain(completedOptions completedServerRunOptions, stopCh <-chan
 completedOptions의 설정에 따라 kubeAPIServerConfig와 Extension API server를 위한 apiExtensionsConfig를 통해 기본 API server와 Extended API server를 만들고
 생성된 두 API server의 access를 통합하는 Aggregator Server를 생성하여 반환한다.
 
-*Aggregation Architecture에 대한 지식이 있으면 매우 유용할 것이라는 이야기를 전해들었기 떄문에 AggregatorServer와 관련해서
-[Aggregation layer](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/apiserver-aggregation/) [^1] 와 어떠한 연관이 있는지 추후에 확인해보도록 하자.*
+*Aggregation Architecture에 대한 지식이 있으면 매우 유용할 것이라는 이야기를 전해들었기에 AggregatorServer와 관련해서
+Aggregation layer [^2] 와 어떠한 연관이 있는지 추후에 확인해보도록 하자.*
 
 이제 CreateKubeAPIServer method를 확인해보자.
 
@@ -200,12 +200,12 @@ Director
 만약 처리될 수 없는 요청이면 NonGoRestfulMux를 호출해 정상적으로 응답이 될 수 있도록 유도한다.
 이렇게 동작하는 Director에 의해 실패 및 프록시 케이스를 적절히 처리할 수 있게 된다.
 `apis`를 gorestful에 등록하면 `/apis` 또는 `/apis/*`가 아닌 모든 요청은 404 응답이 전달되며 다른 모든 것을 포함하는 패턴 등록 시도는 gorestful 제약에 의해 실패하게 된다.
-이에 mux가 필요한 것이다. Kubernetes에서는 요청이 gorestful이 처리할 수 없는 path를 포함할 경우 mux로 위임해서 처리하도록 설계했다.
+이에 mux가 필요한 것이다. Kubernetes에서는 요청이 gorestful에서 처리할 수 없는 path를 포함할 경우 mux로 위임해서 처리하도록 설계했다.
 
 FullHandlerChain
 : HTTP 요청에 응답하는 http.Handler이다. 전체 filter chain가 포함된 상태에서 Director를 호출하게 된다.
 
-결국 호출 순서는 다음과 같다:
+HTTP 요청이 전달되었을 때의 호출 순서는 다음과 같다:
 *FullHandlerChain -> Director -> {GoRestfulContainer, NonGoRestfulMux}*
 
 생성된 APIServerHandler를 통해 `/`, `/debug/*`, `/metrics/`, `version`을 포함한 여러 path를 GoRestfulContainer와 NonGoRestfulMux에 추가한다.
@@ -219,6 +219,7 @@ GET https://192.168.49.2:8443/api/v1/pods?limit=500 200 OK in 15 milliseconds
 GET https://192.168.49.2:8443/apis/apps/v1/deployments?limit=500 200 OK in 12 milliseconds
 ```
 {: .nolineno}
+*: pods와 deployments의 URL 확인*
 
 Kubernetes는 처음 pods와 같은 리소스를 만들 때에는 `/api`이 root path로 붙도록 설계되었고 이후 추가되는 deployments와 같은 리소스들은 `/apis`를 root path로 시작하도록 설계하고 있어서
 이러한 리소스들을 *Line:35*, *Line:60*의 `InstallLegacyAPI()` & `InstallAPIs()`에서 각각 바인딩해주고 있다.
@@ -265,7 +266,7 @@ func (m *Instance) InstallAPIs(apiResourceConfigSource serverstorage.APIResource
 
 restStorageProviders에 포함돼 있는 [RESTStorageProviders](https://pkg.go.dev/k8s.io/kubernetes/pkg/controlplane#RESTStorageProvider) 를 통해
 해당 API Group에 대한 [APIGroupInfo](https://pkg.go.dev/k8s.io/apiserver/pkg/server#APIGroupInfo) 를 빌드하고 모아
-*Line:30의 `InstallAPIGroups(apiGroupInfo...)`를 호출하면서 인자로 전달한다.
+*Line:30*의 `InstallAPIGroups(apiGroupInfo...)`를 호출하면서 인자로 전달한다.
 
 RESTStorage
 : 특정 리소스나 컬렉션의 정보를 반환하는 동작에 대한 method를 구현할 수 있으며 생성과 변경 및 삭제 전략을 포함하는 인터페이스.
@@ -455,4 +456,5 @@ ServeHTTP method가 실행되면서 내부 로직을 통해 일련의 인코딩�
 <div style="text-align: center; font-weight: bold; margin-top: 100px; margin-bottom: 50px">끝.</div>
 
 ---
-[^1]: Aggregation layer를 구성하면 Kubernetes API core의 일부가 아닌 추가 API로 Kubernetes API server를 확장할 수 있다.
+[^1]: https://github.com/spf13/cobra
+[^2]: https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/apiserver-aggregation/
