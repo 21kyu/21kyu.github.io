@@ -61,8 +61,8 @@ func NewAPIServerCommand() *cobra.Command {
 ```
 
 completedOptions를 설정하고 해당 옵션이 유효한지를 확인한다.
-그리고 지정된 APIServer를 생성하고 실행하는 Run() method를 호출한다.
-Run() method 내부에서 호출되는 CreateServerChain() method를 살펴보자.
+그리고 지정된 APIServer를 생성하고 실행하는 `Run()` method를 호출한다.
+`Run()` method 내부에서 호출되는 `CreateServerChain()` method를 살펴보자.
 
 ```go
 func CreateServerChain(completedOptions completedServerRunOptions, stopCh <-chan struct{}) (*aggregatorapiserver.APIAggregator, error) {
@@ -198,7 +198,10 @@ NonGoRestfulMux
 
 Director
 : 해당 path가 GoRestfulContainer에 의해 처리될 수 있는지를 확인하고 호출하며,
-만약 처리될 수 없는 요청이면 NonGoRestfulMux를 호출해 정상적으로 응답이 될 수 있도록 유도한다. << director가 왜 필요한가 보충
+만약 처리될 수 없는 요청이면 NonGoRestfulMux를 호출해 정상적으로 응답이 될 수 있도록 유도한다.
+이렇게 동작하는 Director에 의해 실패 및 프록시 케이스를 적절히 처리할 수 있게 된다.
+`apis`를 gorestful에 등록하면 `/apis` 또는 `/apis/*`가 아닌 모든 요청은 404 응답이 전달되며 다른 모든 것을 포함하는 패턴 등록 시도는 gorestful 제약에 의해 실패하게 된다.
+이에 mux가 필요한 것이다. Kubernetes에서는 요청이 gorestful이 처리할 수 없는 path를 포함할 경우 mux로 위임해서 처리하도록 설계했다.
 
 FullHandlerChain
 : HTTP 요청에 응답하는 http.Handler이다. 전체 filter chain가 포함된 상태에서 Director를 호출하게 된다.
