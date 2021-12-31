@@ -379,7 +379,7 @@ Server를 시작하기 전에 `PrepareRun()` method에서 `/healthz` path 등록
 
 ## Watch Server Creation
 
-Watch Server가 생성되는 과정을 정리하고 마무리해야겠다. registerResourceHandler에서 action.Verb가 LIST일 경우를 살펴보자.
+Watch Server가 생성되는 과정을 정리하고 마무리해야겠다. registerResourceHandler에서 `action.Verb`가 "LIST"일 경우를 살펴보자.
 
 ```go
 case "LIST": // List all resources of a kind.
