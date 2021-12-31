@@ -60,6 +60,8 @@ func NewAPIServerCommand() *cobra.Command {
 }
 ```
 
+### ServerChain
+
 completedOptions를 설정하고 해당 옵션이 유효한지를 확인한다.
 그리고 지정된 APIServer를 생성하고 실행하는 `Run()` method를 호출한다.
 `Run()` method 내부에서 호출되는 `CreateServerChain()` method를 살펴보자.
@@ -88,10 +90,7 @@ completedOptions의 설정에 따라 kubeAPIServerConfig와 Extension API server
 생성된 두 API server의 access를 통합하는 Aggregator Server를 생성하여 반환한다.
 
 *Aggregation Architecture에 대한 지식이 있으면 매우 유용할 것이라는 이야기를 전해들었기 떄문에 AggregatorServer와 관련해서
-[Aggregation layer](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/apiserver-aggregation/) 와 어떠한 연관이 있는지 추후에 확인해보도록 하자.*
-
-Aggregation layer
-: Aggregation layer를 구성하면 Kubernetes API core의 일부가 아닌 추가 API로 Kubernetes API server를 확장할 수 있다.
+[Aggregation layer](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/apiserver-aggregation/) [^1] 와 어떠한 연관이 있는지 추후에 확인해보도록 하자.*
 
 이제 CreateKubeAPIServer method를 확인해보자.
 
@@ -109,7 +108,7 @@ func CreateKubeAPIServer(kubeAPIServerConfig *controlplane.Config, delegateAPISe
 *Line:2*의 `kubeAPIServerConfig.Complete().New(delegateAPIServer)` 코드가 보인다.
 `Complete()` method를 통해 유효한 데이터가 존재해야하는 모든 설정되지 않은 필드를 채우고 `New()` method를 통해 kube-apiserver의 구성을 생성한다.
 
-## APIServerHandlers
+### APIServerHandlers
 
 ```go
 func (c completedConfig) New(delegationTarget genericapiserver.DelegationTarget) (*Instance, error) {
@@ -281,7 +280,7 @@ APIGroupInfo
 : 해당 API Group에 대한 정보를 포함한다.
 Group 내의 리소스들에 대한 정보가 들어있는 VersionedResourcesStorageMap을 가지고 있다.
 
-## Resource Handler
+### Resource Handler
 
 *InstallAPIGroups -> installAPIResources -> InstallREST -> registerResourceHandler*까지 도달하면서
 apiGroupInfo에 포함된 RESTStorage를 통해 해당 리소스가 지원하는 작업들을 Action으로 저장하고 리소스 경로(*e.g., /api/apiVersion/resource*)에서 표준 REST 동사(GET, PUT, POST 및 DELETE)로 처리될 수 있도록 한다.
@@ -351,7 +350,7 @@ Route
 RouteFunction
 : Route에 바인딩할 수 있는 function의 signature를 선언한다.
 
-## Execution the final RUN method
+### Execution the final RUN method
 
 이렇게 server는 `CreateServerChain()` method를 통해 생성된다.
 이제 다시 처음으로 돌아가 `NewAPIServerCommand()` method 내부에서 실행되는 `Run()` method를 보자.
@@ -454,3 +453,6 @@ ServeHTTP method가 실행되면서 내부 로직을 통해 일련의 인코딩�
 다음으로는 Informer란 어떤 것인지, 그리고 어떠한 아키텍처를 통해 위와 같은 문제를 해결했는지 정리해보자.
 
 <div style="text-align: center; font-weight: bold; margin-top: 100px; margin-bottom: 50px">끝.</div>
+
+---
+[^1]: Aggregation layer를 구성하면 Kubernetes API core의 일부가 아닌 추가 API로 Kubernetes API server를 확장할 수 있다.
