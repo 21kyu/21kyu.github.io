@@ -444,6 +444,8 @@ ServeHTTP method가 실행되면서 내부 로직을 통해 일련의 인코딩�
 
 ## Conclusion
 
+Kubernetes API server는 go-restful design pattern을 따르며 특정 리소스의 RESTStorage에 구현된 watcher를 통해 클라이언트에게 watch event에 대한 응답을 제공한다.
+
 생략을 나름대로 최대한 했음에도 불구하고 굉장히 정교하고 복잡한 핵심 코어인지라 API server 코드 분석이 매우 길어졌다.
 부족한 부분들이 아쉽기도 한데 이쯤 정리하는 선에서 일단은 만족하기로 했다.
 이 포스팅과 관련해 추가적인 수정 사항이나 보충할 내용이 생긴다면 그 때 업데이트할 예정이다.
