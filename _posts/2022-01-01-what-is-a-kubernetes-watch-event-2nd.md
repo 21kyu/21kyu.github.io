@@ -24,7 +24,7 @@ render_with_liquid: false
 
 ### Prerequisites
 
-- Kubernetes 소스 코드
+- [Kubernetes Source Code](https://github.com/kubernetes/kubernetes)
 
 ## API Server analysis
 
@@ -189,7 +189,6 @@ GoRestfulContainer
 [*restful.Container](https://pkg.go.dev/github.com/emicklei/go-restful@v2.9.5+incompatible#Container) 이다.
 즉, Container는 HTTP 요청을 다중화하기 위한 [WebService](https://pkg.go.dev/github.com/emicklei/go-restful@v2.9.5+incompatible#WebService) collection을
 보유하며 WebService에는 root path가 지정되며 최종적으로 path와 method가 [Route](https://pkg.go.dev/github.com/emicklei/go-restful@v2.9.5+incompatible#Route) 에 의해 바인딩된다.
-(Container -> WebService -> Route)
 
 NonGoRestfulMux
 : chain에서 가장 마지막에 호출되는 HTTP handler이다. mux 객체를 래핑하고 exposedPaths를 기록하는 *mux.PathRecorderMux이며 모든 filter와 API가 처리된 후에 불리게 된다.
@@ -205,8 +204,8 @@ Director
 FullHandlerChain
 : HTTP 요청에 응답하는 http.Handler이다. 전체 filter chain가 포함된 상태에서 Director를 호출하게 된다.
 
-HTTP 요청이 전달되었을 때의 호출 순서는 다음과 같다:
-*FullHandlerChain -> Director -> {GoRestfulContainer, NonGoRestfulMux}*
+![HTTP Request Flow](/images/http-request-flow.png)
+_그림 1: HTTP 요청이 전달되었을 때의 호출 순서_
 
 생성된 APIServerHandler를 통해 `/`, `/debug/*`, `/metrics/`, `version`을 포함한 여러 path를 GoRestfulContainer와 NonGoRestfulMux에 추가한다.
 또한 logs 관련 라우팅을 지원하는지 확인 후 `/logs` path를 추가한다.
