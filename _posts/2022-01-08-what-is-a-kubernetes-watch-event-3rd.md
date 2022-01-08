@@ -53,6 +53,7 @@ Informer에 대해 자세히 파악하기 전에 간단히 사용해보고자 �
 🌟  Enabled addons: storage-provisioner, default-storageclass
 🏄  Done! kubectl is now configured to use "minikube" cluster and "default" namespace by default
 ```
+{: .nolineno}
 
 Informer 예제를 작성하기 위한 Go 프로젝트를 하나 만들어준다.
 
@@ -62,6 +63,7 @@ go: creating new go.mod: module example.com/informer
 
 ❯ touch main.go
 ```
+{: .nolineno}
 
 **main.go** 파일 생성 후 아래 코드를 작성하도록 하자.
 
@@ -180,6 +182,7 @@ Update: kube-proxy-crjsd
 Update: etcd-minikube
 ...
 ```
+{: .nolineno}
 
 Kubernetes 클러스터 위에 올라가 있는 모든 Pod들의 이벤트가 핸들링되고 있음을 확인할 수 있다.
 모든 namespace의 pod를 관찰할 필요는 없으므로 관찰 범위를 줄여보자.
@@ -209,6 +212,7 @@ Update: nginx
 Update: nginx
 ...
 ```
+{: .nolineno}
 
 nginx pod에 대한 이벤트가 핸들링되고 있음을 확인할 수 있다.
 여기서 이상한 부분이 있다. OnUpdate 이벤트는 왜 계속 불려지고 있을까?
@@ -283,6 +287,7 @@ Update: nginx, old RV: 2206, new RV: 2206
 Update: nginx, old RV: 2206, new RV: 2206
 ...
 ```
+{: .nolineno}
 
 old/new resourceVersion을 확인할 수 있다.
 object에 대한 변경이 전혀 없는데도 OnUpdate의 동작으로 인해 꾸준히 핸들링되고 있다.
@@ -298,9 +303,10 @@ Update: nginx, old RV: 2206, new RV: 2451 <- pod/nginx labeled
 Update: nginx, old RV: 2451, new RV: 2451
 Update: nginx, old RV: 2451, new RV: 2451
 ```
+{: .nolineno}
 
 nginx pod에 label이 추가되고 resourceVersion 또한 변경되었다.
-이렇듯 object가 영속화되는 시점의 상태를 식별할 수 있는 resourceVersion을 사용하면 쉽게 변경 감지를 처리할 수 있다.
+이렇듯 object가 영속화되는 시점의 상태를 식별할 수 있는 resourceVersion을 사용하면 쉽게 변경 감지에 대한 이벤트를 처리할 수 있다.
 
 ## Informer's Architecture
 
