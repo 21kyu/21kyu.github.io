@@ -22,7 +22,7 @@ Kubernetes에서는 이러한 Watch 기능을 사용하면 API server로부터 �
 
 - [x] 1. **Watch Event**: Kubernetes의 Watch event는 어떻게 동작하는가
 - [ ] 2. Resource Handler: [Watch Server에 요청이 도달하기까지의 과정](http://blog.wqlee.com/posts/what-is-a-kubernetes-watch-event-2nd/)
-- [ ] 3. Informer: [Informer의 구조에 대한 고찰](http://blog.wqlee.com/posts/what-is-a-kubernetes-watch-event-3rd/)
+- [ ] 3. Informer: [Informer의 구조](http://blog.wqlee.com/posts/what-is-a-kubernetes-watch-event-3rd/)
 - [ ] 4. Event
 
 ---

@@ -1,5 +1,5 @@
 ---
-title: Informer의 구조에 대한 고찰
+title: Informer의 구조
 author: wq
 name: Wongyu Lee
 link: https://github.com/kyu21
@@ -20,7 +20,7 @@ Informer는 In-memory 캐싱을 통해 이러한 문제를 해결하고자 했�
 
 - [ ] 1. **Watch Event**: [Kubernetes의 Watch event는 어떻게 동작하는가](http://blog.wqlee.com/posts/what-is-a-kubernetes-watch-event/)
 - [ ] 2. **Resource Handler**: [Watch Server에 요청이 도달하기까지의 과정](http://blog.wqlee.com/posts/what-is-a-kubernetes-watch-event-2nd/)
-- [x] 3. **Informer**: Informer의 구조에 대한 고찰
+- [x] 3. **Informer**: Informer의 구조
 - [ ] 4. Event
 
 ### Prerequisites
@@ -310,4 +310,47 @@ nginx pod에 label이 추가되고 resourceVersion 또한 변경되었다.
 
 ## Informer's Architecture
 
-TODO
+이제 Informer가 어떤 형태로 구성되어 있는지 살펴보도록 하자.
+Kubernetes 소스 코드에 따른 Informer를 통한 watch event 전달 방식은 그림 1.과 같다.
+
+![informer-architecture](/images/informer-architecture.png)
+_그림 1. Informer가 watch event를 전달하는 방식_
+
+하나의 SharedInformer는 특정 API Group 및 kind/resource의 object에 대한 연결을 제공한다.
+object는 API Group, kind/resource, namespace 및 name으로 식별된다.
+
+SharedInformer를 기반으로 Indexer 추가 및 가져오기 기능을 제공하는 SharedIndexInformer를 살펴보자.
+(informers.NewSharedInformer()를 호출하면 NewSharedIndexInformer를 반환한다.)
+SharedIndexInformer는 주요 컴포넌트인 Indexer, Controller, SharedProcessor를 확인하고 넘어가는 것이 좋겠다.
+
+Indexer
+: Indexer는 인덱싱된 로컬 캐시이다.
+object를 저장하고 처리하는 인터페이스인 Store를 여러 인덱스로 확장하며 DeltaFIFO에게는 KnownObjects 역할을 하며
+object를 조회할 때 사용되는 Key의 목록을 제공해준다.
+또한 클라이언트가 Lister를 통해 List/Get 요청을 하면 캐싱된 데이터를 전달해준다.
+
+Controller
+: Controller는 실행될 때 지정된 리소스를 감시하고 모든 변경 사항이 지정된 Store에 저장되도록 하는 Reflector를 생성하면서 감시 작업에 ListerWatcher를 사용하도록 한다.
+ListerWatcher는 object/notification들을 가져오고 이를 DeltaFIFO로 push하는 동시에 해당 FIFO에서 pop하여
+HandleDeltas로 Delta를 처리하는 컨트롤러이며 각 Delta에 대해 Indexer를 업데이트하고 관련 알림을 sharedProcessor에 채운다.
+
+SharedProcessor
+: Informer의 모든 클라이언트(Listener를 통해)에 해당 알림을 전달하는 역할을 한다.
+클라이언트에서 ResourceEventHandler를 추가하면 SharedProcessor의 Listener에 추가가 되어 알림을 지속적으로 받을 수 있게 된다.
+
+여기에서 DeltaFIFO는 주어진 객체의 변경 사항들에 대한 Delta를 항목으로 다루는 Queue이다.
+Informer가 실행될 때 생성되며 Pop(), Get(), GetByKey(), List()와 같은 method들을 제공한다.
+
+## Conclusion
+
+Inforemr는 특정 리소스에 대한 변경 감지가 필요한 수많은 클라이언트가 존재하더라도 하나의 watch connection으로 처리될 수 있도록 설계되었다.
+변경 감지가 필요한 클라이언트는 단지 ResourceEventHandler를 추가하기만 하면 된다.
+또한 Indexer에 캐싱된 데이터를 Lister를 통해서 접근해 사용할 수 있다.
+
+그리고 Informer는 watch connection이 끊어지면 WatchErrorHandler를 호출한 후 Backoff 한다.
+만약 중단된 기간이 길어져서 etcd가 event를 데이터베이스에서 삭제를 해 event가 손실되는 경우, Informer는 모든 object를 다시 나열(re-list)한다.
+클라이언트가 Informer를 사용하지 않고 Watch() verb를 사용했다면 이러한 작업들을 직접해야만 하거나, 그렇지 않다면 event를 놓치게 될 것이다.
+
+이러한 이유들로 Informer의 사용이 권장되고 있다. 이제 마지막으로 Kubernetes의 Event에 대해 파악해보자.
+
+<div style="text-align: center; font-weight: bold; margin-top: 100px; margin-bottom: 50px">끝.</div>
