@@ -190,7 +190,6 @@ Kubernetes 클러스터 위에 올라가 있는 모든 Pod들의 이벤트가 �
 ```go
 namespaceOption := informers.WithNamespace("default")
 informerFactory := informers.NewSharedInformerFactoryWithOptions(clientset, time.Second*1, namespaceOption)
-}
 ```
 
 32 라인의 informerFactory를 생성하는 부분을 위와 같이 변경하고 다시 실행하자.
