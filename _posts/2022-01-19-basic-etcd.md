@@ -176,3 +176,12 @@ Every "--snapshot-count" writes:
 * Remove WAL file older than the snapshot
 
 RAFT ensures WAL log is the same on all members of an etcd cluster!
+
+---
+
+**References**
+
+1. [Debugging etcd - Joe Betz & Jingyi Hu, Google - Youtube](https://www.youtube.com/watch?v=NVMZBBQ9hsM)
+2. [Understanding Distributed Consensus in etcd and Kubernetes - Laura Frank, CloudBees - Youtube](https://www.youtube.com/watch?v=n9VKAKwBj_0)
+3. [The Raft Consensus Algorithm - Github](https://raft.github.io)
+4. [Raft (algorithm) - Wikipedia](https://en.wikipedia.org/wiki/Raft_(algorithm))
