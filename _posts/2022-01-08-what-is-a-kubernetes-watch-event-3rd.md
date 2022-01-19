@@ -5,7 +5,7 @@ name: Wongyu Lee
 link: https://github.com/kyu21
 date: 2022-01-08 22:45:00 +0900
 categories: [kubernetes, analyze]
-tags: [kubernetes, watch, event, apiserver, gorestful]
+tags: [kubernetes, watch, event, apiserver, gorestful, informer]
 render_with_liquid: false
 ---
 
