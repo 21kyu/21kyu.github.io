@@ -48,18 +48,20 @@ Orchestration systems typically use a key/value store backed by a consensus algo
 
 #### Raft is responsible for
 
+[The Secret Lives of Data](http://thesecretlivesofdata.com/raft/)
+
 Leader election
 : Raft uses a randomized election timeout to ensure that split vote problems are resolved quickly.
 This should reduce the chance of a split vote because servers won't become candidates at the same time: a single server will time out,
 win the election, then become leader and send heartbeat messages to other servers before any of the followers can become candidates.
-[demo.consensus.group](demo.consensus.group)
+[demo.consensus.group](https://raft.github.io/raftscope/index.html)
 
 Log replication
 : The leader is responsible for the log replication.
 It accepts client requests. Each client request consists of a command to be executed by the replicated state machines in the cluster.
 After being appended to the leader's log as a new entry, each of the requests is forwarded to the followers as AppendEntries messages.
 In case of unavailability of the followers, the leader retries AppendEntries messages indefinitely, until the log entry is eventually stored by all of the followers.
-[logging-post](bit.ly/logging-post)
+[logging-post](https://engineering.linkedin.com/distributed-systems/log-what-every-software-engineer-should-know-about-real-time-datas-unifying)
 
 Safety
 : Election safety (_at most one leader can be elected in a given term._),
