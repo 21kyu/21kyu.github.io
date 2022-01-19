@@ -8,6 +8,10 @@ categories: [kubernetes, analyze]
 tags: [kubernetes, watch, event]
 math: true
 render_with_liquid: false
+image:
+  src: /images/raft.svg
+  width: 200
+  height: 200
 ---
 
 * Highly Available
@@ -37,6 +41,8 @@ The cluster has one and only one elected leader which is fully responsible for m
 It means that the leader can decide on new entries' placement and establishment of data flow between it and the other servers without consulting other servers.
 A leader leads until it fails or disconnects, in which case a new leader is elected.
 
+[The Secret Lives of Data](http://thesecretlivesofdata.com/raft/)
+
 ### Raft is used in a lot of places
 
 Orchestration systems typically use a key/value store backed by a consensus algorithm
@@ -48,13 +54,11 @@ Orchestration systems typically use a key/value store backed by a consensus algo
 
 #### Raft is responsible for
 
-[The Secret Lives of Data](http://thesecretlivesofdata.com/raft/)
-
 Leader election
 : Raft uses a randomized election timeout to ensure that split vote problems are resolved quickly.
 This should reduce the chance of a split vote because servers won't become candidates at the same time: a single server will time out,
 win the election, then become leader and send heartbeat messages to other servers before any of the followers can become candidates.
-[demo.consensus.group](https://raft.github.io/raftscope/index.html)
+[raftscope](https://raft.github.io/raftscope/index.html)
 
 Log replication
 : The leader is responsible for the log replication.
