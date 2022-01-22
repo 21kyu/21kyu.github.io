@@ -4,8 +4,8 @@ author: wq
 name: Wongyu Lee
 link: https://github.com/kyu21
 date: 2022-01-19 23:00:00 +0900
-categories: [kubernetes, analyze]
-tags: [kubernetes, watch, event]
+categories: [kubernetes, checkup]
+tags: [kubernetes, watch, event, etcd]
 math: true
 render_with_liquid: false
 image:
