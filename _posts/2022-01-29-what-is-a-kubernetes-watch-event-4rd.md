@@ -9,16 +9,12 @@ tags: [kubernetes, watch, event]
 render_with_liquid: false
 ---
 
-
-
 ### What is a Kubernetes Watch Event?
 
 - [ ] 1. **Watch Event**: [Kubernetes의 Watch event는 어떻게 동작하는가](http://blog.wqlee.com/posts/what-is-a-kubernetes-watch-event/)
 - [ ] 2. **Resource Handler**: [Watch Server에 요청이 도달하기까지의 과정](http://blog.wqlee.com/posts/what-is-a-kubernetes-watch-event-2nd/)
 - [ ] 3. **Informer**: [Informer의 구조](http://blog.wqlee.com/posts/what-is-a-kubernetes-watch-event-3rd/)
 - [x] 4. **Event**: Event란건 어쩌면 어려운게 아닐까
-
-### Prerequisites
 
 ## Kubernetes Architecture
 
@@ -108,7 +104,7 @@ etcd watcher는 etcd v3 client session을 제공하고 관리하는 Client의 Wa
 WatchResponse를 가져와 파싱하고, watchChan.incomingEventChan으로 전달한다.
 
 ![etcd watcher](/images/etct-watcher.png)
-_그림 2. etcd watcher_
+_그림 2. Etcd storage_
 
 processEvent를 톨해 etcd watcher의 이벤트를 incomingEventChan으로 받아 처리하고 그 결과를 resultChan으로 보낸다.
 이 결과는 곧 Cacher 내부의 reflector가 수행하는 watch로 전달되어 watchCache가 받아 processEvent를 통해 이벤트를 전달하게 되고
