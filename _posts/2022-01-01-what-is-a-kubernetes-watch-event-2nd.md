@@ -20,7 +20,7 @@ render_with_liquid: false
 - [ ] 1. **Watch Event**: [Kubernetes의 Watch event는 어떻게 동작하는가](http://blog.wqlee.com/posts/what-is-a-kubernetes-watch-event/)
 - [x] 2. **Resource Handler**: Watch Server에 요청이 도달하기까지의 과정
 - [ ] 3. Informer: [Informer의 구조](http://blog.wqlee.com/posts/what-is-a-kubernetes-watch-event-3rd/)
-- [ ] 4. Event
+- [ ] 4. Event: [Event란건 어쩌면 어려운게 아닐까](http://blog.wqlee.com/posts/what-is-a-kubernetes-watch-event-4rd/)
 
 ### Prerequisites
 
@@ -88,6 +88,7 @@ func CreateServerChain(completedOptions completedServerRunOptions, stopCh <-chan
 
 completedOptions의 설정에 따라 kubeAPIServerConfig와 Extension API server를 위한 apiExtensionsConfig를 통해 기본 API server와 Extended API server를 만들고
 생성된 두 API server의 access를 통합하는 Aggregator Server를 생성하여 반환한다.
+Extension API server는 `customresourcedefinitions` resource를 관리하게 되며 나머지 api-resources들은 kubeAPIServer가 관리하게 된다.
 
 *Aggregation Architecture에 대한 지식이 있으면 매우 유용할 것이라는 이야기를 전해들었기에 AggregatorServer와 관련해서
 Aggregation layer [^2] 와 어떠한 연관이 있는지 추후에 확인해보도록 하자.*
