@@ -18,15 +18,6 @@ Kubernetes는 pods, deployments, services와 같은 resource들을 모니터링�
 Kubernetes에서는 이러한 Watch 기능을 사용하면 API server로부터 데이터를 지속적으로 전달받는다는걸 알겠는데, 정확히 어떠한 방식으로 동작되는지 궁금해졌으므로 차근히 확인하면서 여기에 정리해놓고자 한다.
 혹 글 내용에 대한 수정이 필요하다면 계속해서 업데이트할 예정이다.
 
-### What is a Kubernetes Watch Event?
-
-- [x] 1. **Watch Event**: Kubernetes의 Watch event는 어떻게 동작하는가
-- [ ] 2. Resource Handler: [Watch Server에 요청이 도달하기까지의 과정](http://blog.wqlee.com/posts/what-is-a-kubernetes-watch-event-2nd/)
-- [ ] 3. Informer: [Informer의 구조](http://blog.wqlee.com/posts/what-is-a-kubernetes-watch-event-3rd/)
-- [ ] 4. Event: [Event란건 어쩌면 어려운게 아닐까](http://blog.wqlee.com/posts/what-is-a-kubernetes-watch-event-4rd/)
-
----
-
 ### Prerequisites
 
 - [kubectl](https://kubernetes.io/docs/tasks/tools/#kubectl)

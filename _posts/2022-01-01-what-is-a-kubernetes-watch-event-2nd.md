@@ -15,13 +15,6 @@ render_with_liquid: false
 분석하는 와중에 정말 많은 용어들이 등장했는데 내부적으로 왜 이러한 네이밍을 했는지 Ubiquitous Language를 선정할 때 오고 갔던 많은 내용들이 궁금해지기도 했다.
 이러한 용어들도 같이 정리해볼까 한다.
 
-### What is a Kubernetes Watch Event?
-
-- [ ] 1. **Watch Event**: [Kubernetes의 Watch event는 어떻게 동작하는가](http://blog.wqlee.com/posts/what-is-a-kubernetes-watch-event/)
-- [x] 2. **Resource Handler**: Watch Server에 요청이 도달하기까지의 과정
-- [ ] 3. Informer: [Informer의 구조](http://blog.wqlee.com/posts/what-is-a-kubernetes-watch-event-3rd/)
-- [ ] 4. Event: [Event란건 어쩌면 어려운게 아닐까](http://blog.wqlee.com/posts/what-is-a-kubernetes-watch-event-4rd/)
-
 ### Prerequisites
 
 - [Kubernetes Source Code](https://github.com/kubernetes/kubernetes)

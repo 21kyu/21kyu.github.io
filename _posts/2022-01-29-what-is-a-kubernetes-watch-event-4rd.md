@@ -9,13 +9,6 @@ tags: [kubernetes, watch, event]
 render_with_liquid: false
 ---
 
-### What is a Kubernetes Watch Event?
-
-- [ ] 1. **Watch Event**: [Kubernetes의 Watch event는 어떻게 동작하는가](http://blog.wqlee.com/posts/what-is-a-kubernetes-watch-event/)
-- [ ] 2. **Resource Handler**: [Watch Server에 요청이 도달하기까지의 과정](http://blog.wqlee.com/posts/what-is-a-kubernetes-watch-event-2nd/)
-- [ ] 3. **Informer**: [Informer의 구조](http://blog.wqlee.com/posts/what-is-a-kubernetes-watch-event-3rd/)
-- [x] 4. **Event**: Event란건 어쩌면 어려운게 아닐까
-
 ## Kubernetes Architecture
 
 Kubernetes는 microservice 기반의 아키텍처가 적용되어 있다.
