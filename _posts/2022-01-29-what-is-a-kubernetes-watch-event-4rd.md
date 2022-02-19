@@ -60,7 +60,7 @@ Kubernetes에서는 이를 어떻게 해결했는지 크게 두 주제를 살펴
 1. Edge-driven logic
    - 네트워킹이 끊어지면 event가 손실될 수 있고, controller 자체에 버그가 존재하거나 일부 외부 cloud API가 다운되는 경우도 있어서 누락된 event에 대해 잘 대처하지 못한다.
    - replicaSet controller가 pod 조욜 시에만 해당 pod를 교체한다고 가정했을 때, 누락된 event는 전체 상태를 조정하지 않기 때문에 항상 더 적은 수의 pod가 실행될 수 있게 된다.
-2. Level-driven logic
+2. Edge-triggered, level-driven logic
    - cluster의 최신 상태를 기반으로 로직을 구현하기 때문에 다른 이벤트가 수신될 때 1.에서 발생될 수 있는 문제를 복구한다.
    - replicaSet controller의 경우 항상 지정된 replicas를 클러스터에서 실행 중인 pod와 비교하며 event가 손실되더라고 다음 pod update가 수신될 때 누락된 모든 pod를 교체한다.
 3. Reconciliation with resync
