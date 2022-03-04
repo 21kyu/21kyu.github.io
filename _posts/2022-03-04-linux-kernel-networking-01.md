@@ -310,14 +310,22 @@ SKB의 headroom과 tailroom은 아래와 같다.
 
 참고: [Basic functions for sk_buff{}](http://www.skbuff.net/skbbasic.html)
 
-void *skb_put(struct sk_buff *skb, unsigned int len)
-: 버퍼에 데이터를 추가한다. 이 함수는 skb의 버퍼에 len 바이트를 추가해서 skb의 길이를 len만큼 증가시킨다.
+void skb_reserve(struct sk_buff *skb, int len)
+: tail을 감소시켜 빈 skb의 headroom을 증가시킨다.
+(headroom을 조정한다.)
 
 void *skb_push(struct sk_buff *skb, unsigned int len)
 : skb의 데이터 포인터를 감소시키고 skb의 길이를 len만큼 증가시킨다.
+(headroom을 줄여서 데이터를 추가한다.)
 
 void *skb_pull(struct sk_buff *skb, unsigned int len)
 : skb의 데이터 포인터를 증가시키고 len만큼 skb의 길이를 감소시킨다.
+(headroom을 늘려서 데이터를 제거한다.)
 
-static inline void skb_reserve(struct sk_buff *skb, int len)
-: tail을 감소시켜 빈 skb의 headroom을 증가시킨다.
+void *skb_put(struct sk_buff *skb, unsigned int len)
+: 버퍼에 데이터를 추가한다. 이 함수는 skb의 버퍼에 len 바이트를 추가해서 skb의 길이를 len만큼 증가시킨다.
+(tailroom을 줄이고 데이터를 추가한다.)
+
+void skb_trim(struct sk_buff *skb, unsigned int len)
+: 버퍼의 데이터를 삭제한다.
+(tailroom을 늘려 데이터를 제거한다.)
