@@ -300,13 +300,15 @@ struct sk_buff {
 };
 ```
 
-### SKB의 구조
+
+
+#### Basic functions for sk_buff
 
 SKB의 headroom과 tailroom은 아래와 같다.
 
 <img alt="skb" src="/images/skb.png" width="300"/>
 
-#### 버퍼를 처리하는 함수의 일부 목록
+참고: [Basic functions for sk_buff{}](http://www.skbuff.net/skbbasic.html)
 
 void *skb_put(struct sk_buff *skb, unsigned int len)
 : 버퍼에 데이터를 추가한다. 이 함수는 skb의 버퍼에 len 바이트를 추가해서 skb의 길이를 len만큼 증가시킨다.
