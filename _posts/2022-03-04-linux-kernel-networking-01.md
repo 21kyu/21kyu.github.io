@@ -301,8 +301,7 @@ struct sk_buff {
 #endif
 };
 ```
-
-
+{: .nolineno}
 
 #### Basic functions for sk_buff
 
