@@ -119,5 +119,6 @@ struct net_device {
 ```
 {: .nolineno}
 
-참고.1: [리눅스 커널 네트워킹](http://www.kyobobook.co.kr/product/detailViewKor.laf?ejkGb=KOR&mallGb=KOR&barcode=9791158390471)
-참고.2: [시스템 성능 분석과 최적화](http://www.kyobobook.co.kr/product/detailViewKor.laf?mallGb=KOR&ejkGb=KOR&barcode=9791158390181)
+---
+* 참고.1 [리눅스 커널 네트워킹](http://www.kyobobook.co.kr/product/detailViewKor.laf?ejkGb=KOR&mallGb=KOR&barcode=9791158390471)
+* 참고.2 [시스템 성능 분석과 최적화](http://www.kyobobook.co.kr/product/detailViewKor.laf?mallGb=KOR&ejkGb=KOR&barcode=9791158390181)
