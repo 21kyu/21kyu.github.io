@@ -9,6 +9,13 @@ tags: [kernel, network]
 render_with_liquid: false
 ---
 
+커널 내부 구조를 이해하면 eBPF를 이해하는데 도움이 될 것이다.
+여기서 핵심은 패킷이 `struct sk_buff(socket buffer)` 구조체를 통해 커널 네트워크 스택을 통과한다는 것이다.
+(커널 영역) 소켓의 경우 `struct sock` 구조체에 정의되어 있는데, 이 구조체는 `tcp_sock`과 같은 소켓 프로토콜의 앞부분에 내장되어 있다.
+네트워크 프로토콜은 `tcp_prot`, `udp_prot` 등의 `struct proto` 구조체를 사용해서 소켓에 연결된다.
+
+우선 `sk_buff`를 조사해보자.
+
 _[리눅스 커널 네트워킹](http://www.kyobobook.co.kr/product/detailViewKor.laf?ejkGb=KOR&mallGb=KOR&barcode=9791158390471)
 의 부록 A. 리눅스 API 중 sk_buff 구조체를 정리해두고자 한다._
 
@@ -23,7 +30,7 @@ _[리눅스 커널 네트워킹](http://www.kyobobook.co.kr/product/detailViewKo
 패킷은 외부 또는 같은 장비 내의 다른 소켓으로 보내질 수 있다.
 
 또한 패킷은 커널 소켓에 의해 생성될 수도 있다.
-네트워크 장치(L2)로부터 물리적 프레임을 수신하고 이를 `sk_buff`에 연결한 후 네트워크 계층(L3)에 전달할 수 있다.
+네트워크 장치(L2)로부터 물리적 프레임을 수신하고 이를 `sk_buff`에 연결(_netdev_alloc_skb() 함수를 호출하여 sk_buff 구조체를 할당한다_)한 후 네트워크 계층(L3)에 전달할 수 있다.
 패킷 목적지가 로컬 장비이면 전송 계층(L4)으로 계속 이동할 것이고, 패킷 목적지가 로컬 장비가 아니라면 라우팅 테이블 규칙에 따라 포워딩될 것이다(로컬 장비가 포워딩을 지원할 경우).
 패킷은 이유가 어떻든 간에 손상되면 폐기된다.
 
