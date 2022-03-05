@@ -9,6 +9,12 @@ tags: [kernel, network]
 render_with_liquid: false
 ---
 
+SKB나 sk_buff라고도 부르는 소켓 버퍼(socker buffer) 구조체는 전송 또는 수신된 모든 패킷에 대해 커널이 생성해서 사용하는 구조체이다.
+여러 BPF 프로그램은 이 SKB를 읽어서 패킷 전달 여부를 결정하거나, 현재 소통량에 관한 통계치와 측정치를 BPF 맵에 추가한다.
+또한 eBPF는 SKB의 수정도 가능하다.
+최종 패킷의 대상 주소를 변경함으로써 패킷을 다른 곳으로 재지정할 수 있으며, 심지어 근본적인 구조도 바꿀 수 있다.
+이런 능력을 활용하면 IPv6 전용시스템이 받은 모든 패킷을 IPv4로 변환하는 것도 가능하다.
+
 커널 내부 구조를 이해하면 eBPF를 이해하는데 도움이 될 것이다.
 여기서 핵심은 패킷이 `struct sk_buff(socket buffer)` 구조체를 통해 커널 네트워크 스택을 통과한다는 것이다.
 (커널 영역) 소켓의 경우 `struct sock` 구조체에 정의되어 있는데, 이 구조체는 `tcp_sock`과 같은 소켓 프로토콜의 앞부분에 내장되어 있다.
@@ -34,9 +40,7 @@ _[리눅스 커널 네트워킹](http://www.kyobobook.co.kr/product/detailViewKo
 패킷 목적지가 로컬 장비이면 전송 계층(L4)으로 계속 이동할 것이고, 패킷 목적지가 로컬 장비가 아니라면 라우팅 테이블 규칙에 따라 포워딩될 것이다(로컬 장비가 포워딩을 지원할 경우).
 패킷은 이유가 어떻든 간에 손상되면 폐기된다.
 
-> 참고: SKB나 sk_buff라고도 부르는 소켓 버퍼(socker buffer) 구조체는 전송 또는 수신된 모든 패킷에 대해 커널이 생성해서 사용하는 구조체이다. BPF 프로그램은 이 SKB를 읽어서 패킷 전달 여부를 결정하거나, 현재 소통량에 관한 통계치와 측정치를 BPF 맵에 추가한다. 또한 eBPF는 SKB의 수정도 가능하다. 최종 패킷의 대상 주소를 변경함으로써 패킷을 다른 곳으로 재지정할 수 있으며, 심지어 근본적인 구조고 바꿀 수 있다. 이런 능력을 활용하면 IPv6 전용시스템이 받은 모든 패킷을 IPv4로 변환하는 것도 가능하다. (Linux Observability with BPF)
-
-### sk_buff struct
+### sk_buff 구조체
 
 sk_buff 구조체를 살펴보자.
 
@@ -277,7 +281,7 @@ struct sk_buff {
   __u16      inner_transport_header;
   // 네트워크 계층(L3) 헤더
   __u16      inner_network_header;
-  // 링크 계층(L2) 헤더
+  // 데이터 링크 계층(L2) 헤더
   __u16      inner_mac_header;
 
   __be16      protocol;
@@ -316,7 +320,8 @@ struct sk_buff {
 
 SKB의 headroom과 tailroom은 아래와 같다.
 
-<img alt="skb" src="/images/skb.png" width="300"/>
+![skb](/images/skb.png){: width="300" }
+_SKB의 headroom과 tailroom_
 
 참고: [Basic functions for sk_buff{}](http://www.skbuff.net/skbbasic.html)
 
