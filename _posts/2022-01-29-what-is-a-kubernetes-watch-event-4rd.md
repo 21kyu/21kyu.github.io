@@ -79,6 +79,41 @@ Etcd에 정보가 저장이 될 때 Kubernetes의 구조 상 동일 정보가 �
 낙관적 동시성을 통해 다른 컨트롤러에서도 동일한 개체에 쓰기 작업을 할 경우 충돌이 발생되며 각자 컨트롤러에서 충돌에 대한 후처리를 해야만 한다.
 Kubernetes는 낙관적 동시성을 단조적으로 증가하는 resourceVersion 기반으로 깔끔하게 구현해뒀다.
 
+## Watch in ETCD
+
+etcd는 하나의 key에 대응되는 value 하나만을 저장하고 있는 것이 아니라, key의 모든 변경사항을 파일시스템에 기록하며 이것은 revision을 통해 이루어진다.
+
+| Key                         | Value        | Revision |
+|-----------------------------|--------------|----------|
+| /registry/pods/default/test | ...test=1... | 1        |
+| /registry/pods/default/test | ...test=5... | 2        |
+| /registry/pods/default/test | ...test=2... | 3        |
+
+Etcd는 key에 대한 변경 사항을 비동기적으로 모니터링하기 위한 이벤트 기반 인터페이스는 watch feature를 통해 제공한다.
+API server 내의 etcd v3 client는 watchGrpcStream을 통해 etcd의 watch feature를 사용하고, etcd에 대한 session을 제공하고 관리한다.
+
+![watch-in-etcd](/images/watch-in-etcd.png)
+_그림 1. Watch in etcd_
+
+etcd의 Revision은 곧 Kubernetes에서의 Resource Version이다.
+etcd3storage의 versioner(APIObjectVersioner)는 etcd로부터 전달받은 객체의 revision 값을 통해 resource version을 설정한다.
+
+```go
+// UpdateObject implements Versioner
+func (a APIObjectVersioner) UpdateObject(obj runtime.Object, resourceVersion uint64) error {
+  accessor, err := meta.Accessor(obj)
+  if err != nil {
+    return err
+  }
+  versionString := ""
+  if resourceVersion != 0 {
+    versionString = strconv.FormatUint(resourceVersion, 10)
+  }
+  accessor.SetResourceVersion(versionString)
+  return nil
+}
+```
+
 ## Watch Event in kubeAPIServer
 
 Kubernetes에서의 Watch Event는 아래와 같은 흐름으로 전달이 된다.
@@ -91,13 +126,13 @@ Cacher와 Etcd storage는 API server가 시작될 때 지원해야할 리소스�
 Cacher 내부에 포함된 Reflector에서 호출될 ListAndWatch 메서드에서의 watch 작업은  etcd watcher가 포함된 etcd storage의 watch 메서드를 호출한다.
 
 ![cacher](/images/cacher.png)
-_그림 1. Cacher_
+_그림 2. Cacher_
 
 etcd watcher는 etcd v3 client session을 제공하고 관리하는 Client의 Watch를 통해(아마 여기에서 gRPC를 통해 etcd와 bidirection stream으로 이벤트를 전달받을 것 이다.)
 WatchResponse를 가져와 파싱하고, watchChan.incomingEventChan으로 전달한다.
 
 ![etcd watcher](/images/etct-watcher.png)
-_그림 2. Etcd storage_
+_그림 3. Etcd storage_
 
 processEvent를 톨해 etcd watcher의 이벤트를 incomingEventChan으로 받아 처리하고 그 결과를 resultChan으로 보낸다.
 이 결과는 곧 Cacher 내부의 reflector가 수행하는 watch로 전달되어 watchCache가 받아 processEvent를 통해 이벤트를 전달하게 되고
