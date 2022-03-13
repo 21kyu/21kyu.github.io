@@ -96,7 +96,7 @@ API server 내의 etcd v3 client는 watchGrpcStream을 통해 etcd의 watch feat
 _그림 1. Watch in etcd_
 
 etcd의 Revision은 곧 Kubernetes에서의 Resource Version이다.
-etcd3storage의 versioner(APIObjectVersioner)는 etcd로부터 전달받은 객체의 revision 값을 통해 resource version을 설정한다.
+etcd3storage의 versioner(_APIObjectVersioner_)는 etcd로부터 전달받은 객체의 revision 값을 통해 resource version을 설정한다.
 
 ```go
 // UpdateObject implements Versioner
@@ -128,7 +128,7 @@ Cacher 내부에 포함된 Reflector에서 호출될 ListAndWatch 메서드에�
 ![cacher](/images/cacher.png)
 _그림 2. Cacher_
 
-etcd watcher는 etcd v3 client session을 제공하고 관리하는 Client의 Watch를 통해(아마 여기에서 gRPC를 통해 etcd와 bidirection stream으로 이벤트를 전달받을 것 이다.)
+etcd watcher는 etcd v3 client session을 제공하고 관리하는 Client의 Watch를 통해(여기에서 gRPC를 통해 etcd와 bidirection stream으로 이벤트를 전달받는다.)
 WatchResponse를 가져와 파싱하고, watchChan.incomingEventChan으로 전달한다.
 
 ![etcd watcher](/images/etct-watcher.png)
