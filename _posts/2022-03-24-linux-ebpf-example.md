@@ -117,7 +117,7 @@ print fmt: "filename: 0x%08lx, argv: 0x%08lx, envp: 0x%08lx", ((unsigned long)(R
 ```
 {: .nolineno}
 
-우리가 원하는 정보는 filename 이후의 정보이다.
+사용될 데이터는 filename 정보이다.
 filename 필드의 offset이 16 byte이므로 128 bit부터 유의미한 데이터가 되므로 u64 타입의 unused 필드를 사용해 구조를 맞춘다.
 
 ### BPF Map
