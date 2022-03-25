@@ -1,5 +1,5 @@
 ---
-title: Watch Server에 요청이 도달하기까지의 과정
+title: kubernetes / Watch Server에 요청이 도달하기까지의 과정
 author: wq
 name: Wongyu Lee
 link: https://github.com/kyu21

@@ -1,5 +1,5 @@
 ---
-title: eBFP example
+title: bpf / eBFP example
 author: wq
 name: Wongyu Lee
 link: https://github.com/kyu21
@@ -9,7 +9,7 @@ tags: [kernel, tracepoint]
 render_with_liquid: false
 ---
 
-BPF 프로그램을 만드는 가장 흔한 방법은 C 언어로 소스 코드를 작성하고 그것을 LLVM으로 컴파일하는 것이다.
+[eBPF](https://ebpf.io) 프로그램을 만드는 가장 흔한 방법은 C 언어로 소스 코드를 작성하고 그것을 [LLVM](https://github.com/llvm/llvm-project) 으로 컴파일하는 것이다.
 LLVM은 다양한 종류의 바이트코드를 산출할 수 있는 범용 컴파일러이며, Clang은 LLVM의 메인 프론트엔드이다.
 LLVM을 통해 BPF 프로그램을 컴파일해서 유효한 ELF 이진 파일(리눅스 커널이 적재할 수 있는 이진 실행 파일 형식)을 만들고 커널에 적재하는 일련의 과정을 진행하고 정리해보자.
 

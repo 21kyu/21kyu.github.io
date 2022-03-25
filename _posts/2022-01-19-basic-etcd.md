@@ -1,5 +1,5 @@
 ---
-title: Basic ETCD
+title: etcd / Basic ETCD
 author: wq
 name: Wongyu Lee
 link: https://github.com/kyu21

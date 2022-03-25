@@ -1,5 +1,5 @@
 ---
-title: Informer의 구조
+title: kubernetes / Informer의 구조
 author: wq
 name: Wongyu Lee
 link: https://github.com/kyu21

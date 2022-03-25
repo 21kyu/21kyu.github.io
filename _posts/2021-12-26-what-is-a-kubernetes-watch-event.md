@@ -1,5 +1,5 @@
 ---
-title: Kubernetes의 Watch event는 어떻게 동작하는가
+title: kubernetes / Kubernetes의 Watch event는 어떻게 동작하는가
 author: wq
 name: Wongyu Lee
 link: https://github.com/kyu21

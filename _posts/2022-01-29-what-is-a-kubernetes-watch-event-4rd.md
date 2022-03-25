@@ -1,5 +1,5 @@
 ---
-title: Event란건 어쩌면 어려운게 아닐까
+title: kubernetes / Event란건 어쩌면 어려운게 아닐까
 author: wq
 name: Wongyu Lee
 link: https://github.com/kyu21
