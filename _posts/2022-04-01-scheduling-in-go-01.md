@@ -3,7 +3,7 @@ title: Scheduling In Go - OS Scheduler
 author: wq
 name: Wongyu Lee
 link: https://github.com/kyu21
-date: 2022-03-24 23:00:00 +0900
+date: 2022-04-01 23:00:00 +0900
 categories: [go]
 tags: [go, scheduler, os]
 render_with_liquid: false
