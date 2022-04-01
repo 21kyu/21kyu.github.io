@@ -1,5 +1,5 @@
 ---
-title: linux / Socket Buffer
+title: Socket Buffer
 author: wq
 name: Wongyu Lee
 link: https://github.com/kyu21

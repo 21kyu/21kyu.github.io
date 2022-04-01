@@ -1,10 +1,10 @@
 ---
-title: kubernetes / Watch Server에 요청이 도달하기까지의 과정
+title: Watch Server에 요청이 도달하기까지의 과정
 author: wq
 name: Wongyu Lee
 link: https://github.com/kyu21
 date: 2022-01-01 00:00:00 +0900
-categories: [kubernetes, analyze]
+categories: [kubernetes]
 tags: [kubernetes, watch, event, apiserver, gorestful]
 render_with_liquid: false
 ---

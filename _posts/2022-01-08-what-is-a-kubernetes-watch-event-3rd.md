@@ -1,10 +1,10 @@
 ---
-title: kubernetes / Informer의 구조
+title: Informer의 구조
 author: wq
 name: Wongyu Lee
 link: https://github.com/kyu21
 date: 2022-01-08 22:45:00 +0900
-categories: [kubernetes, analyze]
+categories: [kubernetes]
 tags: [kubernetes, watch, event, apiserver, gorestful, informer]
 render_with_liquid: false
 ---

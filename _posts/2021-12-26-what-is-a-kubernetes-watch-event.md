@@ -1,10 +1,10 @@
 ---
-title: kubernetes / Kubernetes의 Watch event는 어떻게 동작하는가
+title: Kubernetes의 Watch event는 어떻게 동작하는가
 author: wq
 name: Wongyu Lee
 link: https://github.com/kyu21
 date: 2021-12-26 16:00:00 +0900
-categories: [kubernetes, analyze]
+categories: [kubernetes]
 tags: [kubernetes, watch, event]
 render_with_liquid: false
 ---

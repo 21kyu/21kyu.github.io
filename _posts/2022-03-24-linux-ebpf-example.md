@@ -1,5 +1,5 @@
 ---
-title: bpf / eBFP example
+title: eBFP example
 author: wq
 name: Wongyu Lee
 link: https://github.com/kyu21

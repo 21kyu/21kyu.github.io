@@ -1,10 +1,10 @@
 ---
-title: kubernetes / Event란건 어쩌면 어려운게 아닐까
+title: Event란건 어쩌면 어려운게 아닐까
 author: wq
 name: Wongyu Lee
 link: https://github.com/kyu21
 date: 2022-01-29 20:00:00 +0900
-categories: [kubernetes, analyze]
+categories: [kubernetes]
 tags: [kubernetes, watch, event]
 render_with_liquid: false
 ---
