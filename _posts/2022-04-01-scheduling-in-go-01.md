@@ -9,7 +9,7 @@ tags: [go, scheduler, os]
 render_with_liquid: false
 ---
 
-> [Scheduling In Go : Part I - OS SchedulerScheduling In Go : Part I - OS Scheduler](https://www.ardanlabs.com/blog/2018/08/scheduling-in-go-part1.html)
+> [Scheduling In Go : Part I - OS Scheduler](https://www.ardanlabs.com/blog/2018/08/scheduling-in-go-part1.html)
 를 옮긴 글
 
 ## Prelude
@@ -132,7 +132,7 @@ func example(slice []string, str string, i int) {
 ## Thread States
 
 또 다른 중요한 개념은 스케줄러가 스레드와 함께 수행할 역할을 지시하는 스레드 상태이다.
-스레드는 3가지 상태 중 하나가 될 수 있다: Waiting, Runnable or Executing.
+스레드는 3가지 상태 중 하나가 될 수 있다.
 
 Waiting
 : 스레드가 중지됐으며 작업을 계속하기 위해 무언가를 기다리고 있음을 의미한다.
