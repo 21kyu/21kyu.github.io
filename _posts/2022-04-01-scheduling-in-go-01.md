@@ -1,5 +1,5 @@
 ---
-title: Scheduling In Go - OS Scheduler
+title: Scheduling In Go I - OS Scheduler
 author: wq
 name: Wongyu Lee
 link: https://github.com/kyu21
@@ -18,9 +18,9 @@ Go의 스케줄러 내부가 돌아가는 메커니즘(mechanics)과 의미론(s
 첫번째 게시물은 운영체제 스케줄러에 중점을 둔다.
 
 **3부작**:
-1. Scheduling In Go : Part I - OS Scheduler
-2. Scheduling In Go : Part II - Go Scheduler
-3. Scheduling In Go : Part III - Concurrency
+1. [Scheduling In Go : Part I - OS Scheduler](https://www.ardanlabs.com/blog/2018/08/scheduling-in-go-part1.html)
+2. [Scheduling In Go : Part II - Go Scheduler](https://www.ardanlabs.com/blog/2018/08/scheduling-in-go-part2.html)
+3. [Scheduling In Go : Part III - Concurrency](https://www.ardanlabs.com/blog/2018/12/scheduling-in-go-part3.html)
 
 ## Introduction
 
@@ -184,7 +184,7 @@ Linux, Mac 또는 Windows에는 선점형 스케줄러가 존재한다.
 컨텍스트 스위치에는 ~12k에서 ~18k개의 명령어에 해당하는 지연 시간이 발생할 수 있는 것이다.
 본질적으로 프로그램은 컨텍스트 스위치를 하는 동안 많은 수의 명령어를 실행하는 기회를 상실하게 된다.
 
-IO 바운드1 작업에 초점을 맞춘 프로그램에서의 컨텍스트 스위치는 이점이 있다.
+IO 바운드 작업에 초점을 맞춘 프로그램에서의 컨텍스트 스위치는 이점이 있다.
 코어를 점유 중인 스레드가 Waiting 상태가 될 때, Runnable 상태의 다른 스레드가 그 자리를 차지하게 된다.
 이를 통해 코어가 항상 작업을 수행할 수 있게 되는데 이것은 스케줄링의 가장 중요한 측면 중 하나로, 스케줄러는 수행할 작업(Runnable 상태의 스레드)이 있는 경우 코어가 유휴 상태가 되는 것을 허용해선 안된다.
 

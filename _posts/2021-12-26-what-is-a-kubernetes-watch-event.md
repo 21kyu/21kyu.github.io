@@ -129,14 +129,14 @@ watch, err := client.CoreV1().Pods(namespace).Watch(context.TODO(), options)
 // ...
 
 for event := range watch.ResultChan() {
-	pod, ok := event.Object.(*corev1.Pod)
-	// ...
+  pod, ok := event.Object.(*corev1.Pod)
+  // ...
 
-	switch event.Type {
-	case watch.Added, watch.Modified, watch.Deleted, watch.Bookmark:
-  		// ...
-	case watch.Error:
-  		// ...
+  switch event.Type {
+  case watch.Added, watch.Modified, watch.Deleted, watch.Bookmark:
+      // ...
+  case watch.Error:
+      // ...
   }
 }
 ```
@@ -148,25 +148,25 @@ for event := range watch.ResultChan() {
 
 ```go
 func (r *Request) Watch(ctx context.Context) (watch.Interface, error) {
-	// ...
-	var retryAfter *RetryAfter
-	url := r.URL().String()
-	for {
-		req, err := r.newHTTPRequest(ctx)
-		if err != nil {
-			return nil, err
-		}
+  // ...
+  var retryAfter *RetryAfter
+  url := r.URL().String()
+  for {
+    req, err := r.newHTTPRequest(ctx)
+    if err != nil {
+      return nil, err
+    }
 
-		// ...
+    // ...
 
-		resp, err := client.Do(req)
-		// ...
-		if err == nil && resp.StatusCode == http.StatusOK {
-			return r.newStreamWatcher(resp)
-		}
+    resp, err := client.Do(req)
+    // ...
+    if err == nil && resp.StatusCode == http.StatusOK {
+      return r.newStreamWatcher(resp)
+    }
 
-		// ...
-	}
+    // ...
+  }
 }
 ```
 {: file="request.go" }
@@ -178,14 +178,14 @@ StreamWatcher 내부에 Decoder가 존재하며 아래와 같이 구성된다.
 
 ```go
 func NewStreamWatcher(d Decoder, r Reporter) *StreamWatcher {
-	sw := &StreamWatcher{
-		source:   d,
-		reporter: r,
-		result: make(chan Event),
-		done: make(chan struct{}),
-	}
-	go sw.receive()
-	return sw
+  sw := &StreamWatcher{
+    source:   d,
+    reporter: r,
+    result: make(chan Event),
+    done: make(chan struct{}),
+  }
+  go sw.receive()
+  return sw
 }
 ```
 {: file="streamwatcher.go" }
@@ -199,42 +199,42 @@ Goroutine으로 실행되는 `sw.receive()`에서 Decoder로부터 Type과 Objec
 
 ```go
 func (s *WatchServer) ServeHTTP(w http.ResponseWriter, req *http.Request) {
-	// ...
+  // ...
 
-	if wsstream.IsWebSocketRequest(req) {
-		w.Header().Set("Content-Type", s.MediaType)
-		websocket.Handler(s.HandleWS).ServeHTTP(w, req)
-		return
-	}
+  if wsstream.IsWebSocketRequest(req) {
+    w.Header().Set("Content-Type", s.MediaType)
+    websocket.Handler(s.HandleWS).ServeHTTP(w, req)
+    return
+  }
 
-	// ...
+  // ...
 
-	e := streaming.NewEncoder(framer, s.Encoder)
+  e := streaming.NewEncoder(framer, s.Encoder)
 
-	// ...
+  // ...
 
-	w.Header().Set("Content-Type", s.MediaType)
-	w.Header().Set("Transfer-Encoding", "chunked")
-	w.WriteHeader(http.StatusOK)
-	flusher.Flush()
+  w.Header().Set("Content-Type", s.MediaType)
+  w.Header().Set("Transfer-Encoding", "chunked")
+  w.WriteHeader(http.StatusOK)
+  flusher.Flush()
 
-	// ...
-	ch := s.Watching.ResultChan()
-	done := req.Context().Done()
+  // ...
+  ch := s.Watching.ResultChan()
+  done := req.Context().Done()
 
-	for {
-		select {
-		// ...
-		case event, ok := <-ch:
-			// ...
+  for {
+    select {
+    // ...
+    case event, ok := <-ch:
+      // ...
 
-			if err := e.Encode(outEvent); err != nil {
-				utilruntime.HandleError(fmt.Errorf("unable to encode watch object %T: %v (%#v)", outEvent, err, e))
-				return
-			}
-			// ...
-		}
-	}
+      if err := e.Encode(outEvent); err != nil {
+        utilruntime.HandleError(fmt.Errorf("unable to encode watch object %T: %v (%#v)", outEvent, err, e))
+        return
+      }
+      // ...
+    }
+  }
 }
 ```
 {: file="watch.go" }

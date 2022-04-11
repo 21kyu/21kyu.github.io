@@ -26,30 +26,30 @@ render_with_liquid: false
 
 ```go
 func NewAPIServerCommand() *cobra.Command {
-	s := options.NewServerRunOptions()
-	cmd := &cobra.Command{
-		Use: "kube-apiserver",
-		// ...
-		RunE: func(cmd *cobra.Command, args []string) error {
-			// ...
+  s := options.NewServerRunOptions()
+  cmd := &cobra.Command{
+    Use: "kube-apiserver",
+    // ...
+    RunE: func(cmd *cobra.Command, args []string) error {
+      // ...
 
-			// set default options
-			completedOptions, err := Complete(s)
-			if err != nil {
-				return err
-			}
+      // set default options
+      completedOptions, err := Complete(s)
+      if err != nil {
+        return err
+      }
 
-			// validate options
-			if errs := completedOptions.Validate(); len(errs) != 0 {
-				return utilerrors.NewAggregate(errs)
-			}
+      // validate options
+      if errs := completedOptions.Validate(); len(errs) != 0 {
+        return utilerrors.NewAggregate(errs)
+      }
 
-			return Run(completedOptions, genericapiserver.SetupSignalHandler())
-		},
+      return Run(completedOptions, genericapiserver.SetupSignalHandler())
+    },
 
   // ...
 
-	return cmd
+  return cmd
 }
 ```
 
@@ -61,21 +61,21 @@ cobra.Command의 RunE function에서 completedOptions를 설정하고 해당 옵
 
 ```go
 func CreateServerChain(completedOptions completedServerRunOptions, stopCh <-chan struct{}) (*aggregatorapiserver.APIAggregator, error) {
-	kubeAPIServerConfig, serviceResolver, pluginInitializer, err := CreateKubeAPIServerConfig(completedOptions)
-	// ...
-	apiExtensionsConfig, err := createAPIExtensionsConfig(*kubeAPIServerConfig.GenericConfig, kubeAPIServerConfig.ExtraConfig.VersionedInformers, pluginInitializer, completedOptions.ServerRunOptions, completedOptions.MasterCount,
-		serviceResolver, webhook.NewDefaultAuthenticationInfoResolverWrapper(kubeAPIServerConfig.ExtraConfig.ProxyTransport, kubeAPIServerConfig.GenericConfig.EgressSelector, kubeAPIServerConfig.GenericConfig.LoopbackClientConfig, kubeAPIServerConfig.GenericConfig.TracerProvider))
-	// ...
+  kubeAPIServerConfig, serviceResolver, pluginInitializer, err := CreateKubeAPIServerConfig(completedOptions)
+  // ...
+  apiExtensionsConfig, err := createAPIExtensionsConfig(*kubeAPIServerConfig.GenericConfig, kubeAPIServerConfig.ExtraConfig.VersionedInformers, pluginInitializer, completedOptions.ServerRunOptions, completedOptions.MasterCount,
+    serviceResolver, webhook.NewDefaultAuthenticationInfoResolverWrapper(kubeAPIServerConfig.ExtraConfig.ProxyTransport, kubeAPIServerConfig.GenericConfig.EgressSelector, kubeAPIServerConfig.GenericConfig.LoopbackClientConfig, kubeAPIServerConfig.GenericConfig.TracerProvider))
+  // ...
 
-	apiExtensionsServer, err := createAPIExtensionsServer(apiExtensionsConfig, genericapiserver.NewEmptyDelegateWithCustomHandler(notFoundHandler))
-	// ...
-	kubeAPIServer, err := CreateKubeAPIServer(kubeAPIServerConfig, apiExtensionsServer.GenericAPIServer)
-	// ...
-	aggregatorConfig, err := createAggregatorConfig(*kubeAPIServerConfig.GenericConfig, completedOptions.ServerRunOptions, kubeAPIServerConfig.ExtraConfig.VersionedInformers, serviceResolver, kubeAPIServerConfig.ExtraConfig.ProxyTransport, pluginInitializer)
-	// ...
-	aggregatorServer, err := createAggregatorServer(aggregatorConfig, kubeAPIServer.GenericAPIServer, apiExtensionsServer.Informers)
-	// ...
-	return aggregatorServer, nil
+  apiExtensionsServer, err := createAPIExtensionsServer(apiExtensionsConfig, genericapiserver.NewEmptyDelegateWithCustomHandler(notFoundHandler))
+  // ...
+  kubeAPIServer, err := CreateKubeAPIServer(kubeAPIServerConfig, apiExtensionsServer.GenericAPIServer)
+  // ...
+  aggregatorConfig, err := createAggregatorConfig(*kubeAPIServerConfig.GenericConfig, completedOptions.ServerRunOptions, kubeAPIServerConfig.ExtraConfig.VersionedInformers, serviceResolver, kubeAPIServerConfig.ExtraConfig.ProxyTransport, pluginInitializer)
+  // ...
+  aggregatorServer, err := createAggregatorServer(aggregatorConfig, kubeAPIServer.GenericAPIServer, apiExtensionsServer.Informers)
+  // ...
+  return aggregatorServer, nil
 }
 ```
 
@@ -90,12 +90,12 @@ Aggregation layer [^2] 와 어떠한 연관이 있는지 추후에 확인해보�
 
 ```go
 func CreateKubeAPIServer(kubeAPIServerConfig *controlplane.Config, delegateAPIServer genericapiserver.DelegationTarget) (*controlplane.Instance, error) {
-	kubeAPIServer, err := kubeAPIServerConfig.Complete().New(delegateAPIServer)
-	if err != nil {
-		return nil, err
-	}
+  kubeAPIServer, err := kubeAPIServerConfig.Complete().New(delegateAPIServer)
+  if err != nil {
+    return nil, err
+  }
 
-	return kubeAPIServer, nil
+  return kubeAPIServer, nil
 }
 ```
 
@@ -106,71 +106,71 @@ func CreateKubeAPIServer(kubeAPIServerConfig *controlplane.Config, delegateAPISe
 
 ```go
 func (c completedConfig) New(delegationTarget genericapiserver.DelegationTarget) (*Instance, error) {
-	// ...
+  // ...
 
-	s, err := c.GenericConfig.New("kube-apiserver", delegationTarget)
-	if err != nil {
-		return nil, err
-	}
+  s, err := c.GenericConfig.New("kube-apiserver", delegationTarget)
+  if err != nil {
+    return nil, err
+  }
 
-	if c.ExtraConfig.EnableLogsSupport {
-		routes.Logs{}.Install(s.Handler.GoRestfulContainer)
-	}
+  if c.ExtraConfig.EnableLogsSupport {
+    routes.Logs{}.Install(s.Handler.GoRestfulContainer)
+  }
 
-	// ...
+  // ...
 
-	m := &Instance{
-		GenericAPIServer:          s,
-		ClusterAuthenticationInfo: c.ExtraConfig.ClusterAuthenticationInfo,
-	}
+  m := &Instance{
+    GenericAPIServer:          s,
+    ClusterAuthenticationInfo: c.ExtraConfig.ClusterAuthenticationInfo,
+  }
 
-	if c.ExtraConfig.APIResourceConfigSource.VersionEnabled(apiv1.SchemeGroupVersion) {
-		legacyRESTStorageProvider := corerest.LegacyRESTStorageProvider{
-			StorageFactory:              c.ExtraConfig.StorageFactory,
-			ProxyTransport:              c.ExtraConfig.ProxyTransport,
-			KubeletClientConfig:         c.ExtraConfig.KubeletClientConfig,
-			EventTTL:                    c.ExtraConfig.EventTTL,
-			ServiceIPRange:              c.ExtraConfig.ServiceIPRange,
-			SecondaryServiceIPRange:     c.ExtraConfig.SecondaryServiceIPRange,
-			ServiceNodePortRange:        c.ExtraConfig.ServiceNodePortRange,
-			LoopbackClientConfig:        c.GenericConfig.LoopbackClientConfig,
-			ServiceAccountIssuer:        c.ExtraConfig.ServiceAccountIssuer,
-			ExtendExpiration:            c.ExtraConfig.ExtendExpiration,
-			ServiceAccountMaxExpiration: c.ExtraConfig.ServiceAccountMaxExpiration,
-			APIAudiences:                c.GenericConfig.Authentication.APIAudiences,
-		}
-		if err := m.InstallLegacyAPI(&c, c.GenericConfig.RESTOptionsGetter, legacyRESTStorageProvider); err != nil {
-			return nil, err
-		}
-	}
+  if c.ExtraConfig.APIResourceConfigSource.VersionEnabled(apiv1.SchemeGroupVersion) {
+    legacyRESTStorageProvider := corerest.LegacyRESTStorageProvider{
+      StorageFactory:              c.ExtraConfig.StorageFactory,
+      ProxyTransport:              c.ExtraConfig.ProxyTransport,
+      KubeletClientConfig:         c.ExtraConfig.KubeletClientConfig,
+      EventTTL:                    c.ExtraConfig.EventTTL,
+      ServiceIPRange:              c.ExtraConfig.ServiceIPRange,
+      SecondaryServiceIPRange:     c.ExtraConfig.SecondaryServiceIPRange,
+      ServiceNodePortRange:        c.ExtraConfig.ServiceNodePortRange,
+      LoopbackClientConfig:        c.GenericConfig.LoopbackClientConfig,
+      ServiceAccountIssuer:        c.ExtraConfig.ServiceAccountIssuer,
+      ExtendExpiration:            c.ExtraConfig.ExtendExpiration,
+      ServiceAccountMaxExpiration: c.ExtraConfig.ServiceAccountMaxExpiration,
+      APIAudiences:                c.GenericConfig.Authentication.APIAudiences,
+    }
+    if err := m.InstallLegacyAPI(&c, c.GenericConfig.RESTOptionsGetter, legacyRESTStorageProvider); err != nil {
+      return nil, err
+    }
+  }
 
-	restStorageProviders := []RESTStorageProvider{
-		apiserverinternalrest.StorageProvider{},
-		authenticationrest.RESTStorageProvider{Authenticator: c.GenericConfig.Authentication.Authenticator, APIAudiences: c.GenericConfig.Authentication.APIAudiences},
-		authorizationrest.RESTStorageProvider{Authorizer: c.GenericConfig.Authorization.Authorizer, RuleResolver: c.GenericConfig.RuleResolver},
-		autoscalingrest.RESTStorageProvider{},
-		batchrest.RESTStorageProvider{},
-		certificatesrest.RESTStorageProvider{},
-		coordinationrest.RESTStorageProvider{},
-		discoveryrest.StorageProvider{},
-		networkingrest.RESTStorageProvider{},
-		noderest.RESTStorageProvider{},
-		policyrest.RESTStorageProvider{},
-		rbacrest.RESTStorageProvider{Authorizer: c.GenericConfig.Authorization.Authorizer},
-		schedulingrest.RESTStorageProvider{},
-		storagerest.RESTStorageProvider{},
-		flowcontrolrest.RESTStorageProvider{},
-		appsrest.StorageProvider{},
-		admissionregistrationrest.RESTStorageProvider{},
-		eventsrest.RESTStorageProvider{TTL: c.ExtraConfig.EventTTL},
-	}
-	if err := m.InstallAPIs(c.ExtraConfig.APIResourceConfigSource, c.GenericConfig.RESTOptionsGetter, restStorageProviders...); err != nil {
-		return nil, err
-	}
+  restStorageProviders := []RESTStorageProvider{
+    apiserverinternalrest.StorageProvider{},
+    authenticationrest.RESTStorageProvider{Authenticator: c.GenericConfig.Authentication.Authenticator, APIAudiences: c.GenericConfig.Authentication.APIAudiences},
+    authorizationrest.RESTStorageProvider{Authorizer: c.GenericConfig.Authorization.Authorizer, RuleResolver: c.GenericConfig.RuleResolver},
+    autoscalingrest.RESTStorageProvider{},
+    batchrest.RESTStorageProvider{},
+    certificatesrest.RESTStorageProvider{},
+    coordinationrest.RESTStorageProvider{},
+    discoveryrest.StorageProvider{},
+    networkingrest.RESTStorageProvider{},
+    noderest.RESTStorageProvider{},
+    policyrest.RESTStorageProvider{},
+    rbacrest.RESTStorageProvider{Authorizer: c.GenericConfig.Authorization.Authorizer},
+    schedulingrest.RESTStorageProvider{},
+    storagerest.RESTStorageProvider{},
+    flowcontrolrest.RESTStorageProvider{},
+    appsrest.StorageProvider{},
+    admissionregistrationrest.RESTStorageProvider{},
+    eventsrest.RESTStorageProvider{TTL: c.ExtraConfig.EventTTL},
+  }
+  if err := m.InstallAPIs(c.ExtraConfig.APIResourceConfigSource, c.GenericConfig.RESTOptionsGetter, restStorageProviders...); err != nil {
+    return nil, err
+  }
 
-	// ...
+  // ...
 
-	return m, nil
+  return m, nil
 }
 ```
 
@@ -222,38 +222,38 @@ Kubernetes는 처음 pods와 같은 리소스를 만들 때에는 `/api`이 root
 
 ```go
 func (m *Instance) InstallAPIs(apiResourceConfigSource serverstorage.APIResourceConfigSource, restOptionsGetter generic.RESTOptionsGetter, restStorageProviders ...RESTStorageProvider) error {
-	apiGroupsInfo := []*genericapiserver.APIGroupInfo{}
+  apiGroupsInfo := []*genericapiserver.APIGroupInfo{}
 
-	// used later in the loop to filter the served resource by those that have expired.
-	resourceExpirationEvaluator, err := genericapiserver.NewResourceExpirationEvaluator(*m.GenericAPIServer.Version)
-	if err != nil {
-		return err
-	}
+  // used later in the loop to filter the served resource by those that have expired.
+  resourceExpirationEvaluator, err := genericapiserver.NewResourceExpirationEvaluator(*m.GenericAPIServer.Version)
+  if err != nil {
+    return err
+  }
 
-	for _, restStorageBuilder := range restStorageProviders {
-		groupName := restStorageBuilder.GroupName()
-		if !apiResourceConfigSource.AnyVersionForGroupEnabled(groupName) {
-			klog.V(1).Infof("Skipping disabled API group %q.", groupName)
-			continue
-		}
-		apiGroupInfo, enabled, err := restStorageBuilder.NewRESTStorage(apiResourceConfigSource, restOptionsGetter)
-		if err != nil {
-			return fmt.Errorf("problem initializing API group %q : %v", groupName, err)
-		}
-		if !enabled {
-			klog.Warningf("API group %q is not enabled, skipping.", groupName)
-			continue
-		}
+  for _, restStorageBuilder := range restStorageProviders {
+    groupName := restStorageBuilder.GroupName()
+    if !apiResourceConfigSource.AnyVersionForGroupEnabled(groupName) {
+      klog.V(1).Infof("Skipping disabled API group %q.", groupName)
+      continue
+    }
+    apiGroupInfo, enabled, err := restStorageBuilder.NewRESTStorage(apiResourceConfigSource, restOptionsGetter)
+    if err != nil {
+      return fmt.Errorf("problem initializing API group %q : %v", groupName, err)
+    }
+    if !enabled {
+      klog.Warningf("API group %q is not enabled, skipping.", groupName)
+      continue
+    }
 
-		// ...
+    // ...
 
-		apiGroupsInfo = append(apiGroupsInfo, &apiGroupInfo)
-	}
+    apiGroupsInfo = append(apiGroupsInfo, &apiGroupInfo)
+  }
 
-	if err := m.GenericAPIServer.InstallAPIGroups(apiGroupsInfo...); err != nil {
-		return fmt.Errorf("error in registering group versions: %v", err)
-	}
-	return nil
+  if err := m.GenericAPIServer.InstallAPIGroups(apiGroupsInfo...); err != nil {
+    return fmt.Errorf("error in registering group versions: %v", err)
+  }
+  return nil
 }
 ```
 
@@ -351,19 +351,19 @@ RouteFunction
 
 ```go
 func Run(completeOptions completedServerRunOptions, stopCh <-chan struct{}) error {
-	// ...
+  // ...
 
-	server, err := CreateServerChain(completeOptions, stopCh)
-	if err != nil {
-		return err
-	}
+  server, err := CreateServerChain(completeOptions, stopCh)
+  if err != nil {
+    return err
+  }
 
-	prepared, err := server.PrepareRun()
-	if err != nil {
-		return err
-	}
+  prepared, err := server.PrepareRun()
+  if err != nil {
+    return err
+  }
 
-	return prepared.Run(stopCh)
+  return prepared.Run(stopCh)
 }
 ```
 
@@ -390,44 +390,54 @@ case "LIST": // List all resources of a kind.
   routes = append(routes, route)
 ```
 Handler를 생성할 때 `restfulListResource()` 함수를 호출하면서 watcher를 넘겨주는 것을 볼 수 있다.
-이 watcher는 `watcher, isWatcher := storage.(rest.Watcher)`에서 가져오는 것으로 해당 리소스의 RESTStorage에 이미 등록된 Watcher 작업 그 자체이다.
+이 watcher는 `watcher, isWatcher := storage.(rest.Watcher)`에서 가져오는 것으로 해당 리소스의 RESTStorage에 이미 등록된 Watcher 구현체이다.
+RESTStorage는 곧 ETCDStorage이며 ETCDStorage 내부엔 Store가 존재한다.
+이 Store는 [DryRunnableStorage](https://pkg.go.dev/k8s.io/apiserver/pkg/registry/generic/registry#DryRunnableStorage) 를 가지고 있으며,
+[RESTOptions](https://pkg.go.dev/k8s.io/apiserver/pkg/registry/generic#RESTOptions) 의
+[Decorator](https://pkg.go.dev/k8s.io/apiserver/pkg/registry/generic#StorageDecorator)에 등록된 함수가 사용돼
+[UndecoratedStorage](https://pkg.go.dev/k8s.io/apiserver/pkg/registry/generic#UndecoratedStorage) 또는
+[Cacher](https://pkg.go.dev/k8s.io/apiserver/pkg/registry/generic/registry#StorageWithCacher) 가 할당되게 된다.
+
+watchCache 기능이 필요한 리소스라면 Cacher가 할당되며 `storage.(rest.Watcher)`를 따라가다보면
+결국 위의 `watcher`는 Cacher의 `Watch()`에서 반환해주는 CacheWatcher가 된다.
+
 *restfulListResource -> ListResource -> serveWatch* 순으로 호출되면서 리소스에 알맞는 watch 응답을 성공적으로 제공할 수 있게 되는 것이다.
 
 ```go
 func serveWatch(watcher watch.Interface, scope *RequestScope, mediaTypeOptions negotiation.MediaTypeOptions, req *http.Request, w http.ResponseWriter, timeout time.Duration) {
-	defer watcher.Stop()
+  defer watcher.Stop()
 
-	// ...
+  // ...
 
-	server := &WatchServer{
-		Watching: watcher,
-		Scope:    scope,
+  server := &WatchServer{
+    Watching: watcher,
+    Scope:    scope,
 
-		UseTextFraming:  useTextFraming,
-		MediaType:       mediaType,
-		Framer:          framer,
-		Encoder:         encoder,
-		EmbeddedEncoder: embeddedEncoder,
+    UseTextFraming:  useTextFraming,
+    MediaType:       mediaType,
+    Framer:          framer,
+    Encoder:         encoder,
+    EmbeddedEncoder: embeddedEncoder,
 
-		Fixup: func(obj runtime.Object) runtime.Object {
-			result, err := transformObject(ctx, obj, options, mediaTypeOptions, scope, req)
-			if err != nil {
-				utilruntime.HandleError(fmt.Errorf("failed to transform object %v: %v", reflect.TypeOf(obj), err))
-				return obj
-			}
-			// When we are transformed to a table, use the table options as the state for whether we
-			// should print headers - on watch, we only want to print table headers on the first object
-			// and omit them on subsequent events.
-			if tableOptions, ok := options.(*metav1.TableOptions); ok {
-				tableOptions.NoHeaders = true
-			}
-			return result
-		},
+    Fixup: func(obj runtime.Object) runtime.Object {
+      result, err := transformObject(ctx, obj, options, mediaTypeOptions, scope, req)
+      if err != nil {
+        utilruntime.HandleError(fmt.Errorf("failed to transform object %v: %v", reflect.TypeOf(obj), err))
+        return obj
+      }
+      // When we are transformed to a table, use the table options as the state for whether we
+      // should print headers - on watch, we only want to print table headers on the first object
+      // and omit them on subsequent events.
+      if tableOptions, ok := options.(*metav1.TableOptions); ok {
+        tableOptions.NoHeaders = true
+      }
+      return result
+    },
 
-		TimeoutFactory: &realTimeoutFactory{timeout},
-	}
+    TimeoutFactory: &realTimeoutFactory{timeout},
+  }
 
-	server.ServeHTTP(w, req)
+  server.ServeHTTP(w, req)
 }
 ```
 

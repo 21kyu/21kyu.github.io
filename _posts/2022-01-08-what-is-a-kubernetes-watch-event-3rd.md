@@ -64,56 +64,56 @@ go: creating new go.mod: module example.com/informer
 package main
 
 import (
-	"fmt"
-	"os"
-	"time"
+  "fmt"
+  "os"
+  "time"
 
-	v1 "k8s.io/api/core/v1"
-	"k8s.io/client-go/informers"
-	"k8s.io/client-go/kubernetes"
-	"k8s.io/client-go/tools/cache"
-	"k8s.io/client-go/tools/clientcmd"
+  v1 "k8s.io/api/core/v1"
+  "k8s.io/client-go/informers"
+  "k8s.io/client-go/kubernetes"
+  "k8s.io/client-go/tools/cache"
+  "k8s.io/client-go/tools/clientcmd"
 )
 
 func main() {
-	kubeconfigPath := "location to your kubeconfig file path"
-	config, err := clientcmd.BuildConfigFromFlags("", kubeconfigPath)
-	if err != nil {
-		fmt.Printf("The kubeconfig can't be loaded: %v\n", err.Error())
-		os.Exit(1)
-	}
+  kubeconfigPath := "location to your kubeconfig file path"
+  config, err := clientcmd.BuildConfigFromFlags("", kubeconfigPath)
+  if err != nil {
+    fmt.Printf("The kubeconfig can't be loaded: %v\n", err.Error())
+    os.Exit(1)
+  }
 
-	clientset, err := kubernetes.NewForConfig(config)
-	if err != nil {
-		fmt.Printf("NewForConfig failed: %v\n", err.Error())
-		os.Exit(1)
-	}
+  clientset, err := kubernetes.NewForConfig(config)
+  if err != nil {
+    fmt.Printf("NewForConfig failed: %v\n", err.Error())
+    os.Exit(1)
+  }
 
-	stopCh := make(chan struct{})
-	defer close(stopCh)
+  stopCh := make(chan struct{})
+  defer close(stopCh)
 
-	informerFactory := informers.NewSharedInformerFactory(clientset, time.Second*1)
+  informerFactory := informers.NewSharedInformerFactory(clientset, time.Second*1)
 
-	podInformer := informerFactory.Core().V1().Pods()
-	podInformer.Informer().AddEventHandler(cache.ResourceEventHandlerFuncs{
-		AddFunc: func(obj interface{}) {
-			pod := obj.(*v1.Pod)
-			fmt.Println("Add: " + pod.Name)
-		},
-		UpdateFunc: func(oldObj, newObj interface{}) {
-			pod := newObj.(*v1.Pod)
-			fmt.Println("Update: " + pod.Name)
-		},
-		DeleteFunc: func(obj interface{}) {
-			pod := obj.(*v1.Pod)
-			fmt.Println("Delete: " + pod.Name)
-		},
-	})
+  podInformer := informerFactory.Core().V1().Pods()
+  podInformer.Informer().AddEventHandler(cache.ResourceEventHandlerFuncs{
+    AddFunc: func(obj interface{}) {
+      pod := obj.(*v1.Pod)
+      fmt.Println("Add: " + pod.Name)
+    },
+    UpdateFunc: func(oldObj, newObj interface{}) {
+      pod := newObj.(*v1.Pod)
+      fmt.Println("Update: " + pod.Name)
+    },
+    DeleteFunc: func(obj interface{}) {
+      pod := obj.(*v1.Pod)
+      fmt.Println("Delete: " + pod.Name)
+    },
+  })
 
-	informerFactory.Start(stopCh)
-	fmt.Println("InformerFactory started")
+  informerFactory.Start(stopCh)
+  fmt.Println("InformerFactory started")
 
-	<-stopCh
+  <-stopCh
 }
 ```
 
@@ -341,6 +341,21 @@ Inforemr는 특정 리소스에 대한 변경 감지가 필요한 수많은 클�
 
 그리고 Informer는 watch connection이 끊어지면 WatchErrorHandler를 호출한 후 Backoff 한다.
 만약 중단된 기간이 길어져서 etcd가 event를 데이터베이스에서 삭제를 해 event가 손실되는 경우, Informer는 모든 object를 다시 나열(re-list)한다.
+
+```go
+func (r *Reflector) Run(stopCh <-chan struct{}) {
+  klog.V(3).Infof("Starting reflector %s (%s) from %s", r.expectedTypeName, r.resyncPeriod, r.name)
+  wait.BackoffUntil(func() {
+    if err := r.ListAndWatch(stopCh); err != nil {
+    if err := r.ListAndWatch(stopCh); err != nil {
+      r.watchErrorHandler(r, err)
+    }
+  }, r.backoffManager, true, stopCh)
+  klog.V(3).Infof("Stopping reflector %s (%s) from %s", r.expectedTypeName, r.resyncPeriod, r.name)
+}
+```
+{: .nolineno }
+
 클라이언트가 Informer를 사용하지 않고 Watch() verb를 사용했다면 이러한 작업들을 직접해야만 하거나, 그렇지 않다면 event를 놓치게 될 것이다.
 
 이러한 이유들로 Informer의 사용이 권장되고 있다. 이제 마지막으로 Kubernetes의 Event에 대해 파악해보자.
