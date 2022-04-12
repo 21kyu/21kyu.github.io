@@ -138,4 +138,26 @@ processEvent를 톨해 etcd watcher의 이벤트를 incomingEventChan으로 받�
 이 결과는 곧 Cacher 내부의 reflector가 수행하는 watch로 전달되어 watchCache가 받아 processEvent를 통해 이벤트를 전달하게 되고
 Cacher의 Watchers에 등록되어 있던 모든 cacheWatcher들에게 해당 이벤트를 최종적으로 전달해준다.
 
+Cacher의 구성요소들을 살펴보는 것을 끝으로 마무리하자.
+
+watchCache
+: watchCache는 Store 인터페이스를 구현하며 apiServer가 etcd에서 감시하는 객체를 저장하기 위해 사용되는 cache이다.
+
+watchers
+: watchers(indexedWatchers)는 map이며 map의 value type은 cacheWatcher이다.
+kubelet, kube-scheduler와 같은 client가 특정 유형의 감시 리소스가 필요할 때 apiServer에 watch 요청을 시작하고,
+apiServer는 cacheWatcher를 생성한다.
+cacheWatcher는 watch.Interface의 구현체이며, thread-safe하지 않다. watch resource를 담당하여 http 통신을 통해 apiServer에서 client로 전달한다.
+
+watchCacheEvnet
+: watchCache를 사용하는 client에게 보내는 단일 watch event이다.
+일반적인 watch.Event에 추가로 upper layers에서 적절한 필터링을 활성화하기 위한 객체의 이전 상태(prevObject)를 포함한다.
+
+cacheListerWatcher
+: ListerWatcher는 List() 및 Watch()를 포함하는 인터페이스 객체이다.
+
+reflector
+: TBD
+
+
 <div style="text-align: center; font-weight: bold; margin-top: 100px; margin-bottom: 50px">끝.</div>
