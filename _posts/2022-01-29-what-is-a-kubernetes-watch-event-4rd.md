@@ -143,9 +143,9 @@ Cacher의 구성요소들을 살펴보는 것을 끝으로 마무리하자.
 RawStorage
 : Low level key/value storage이다.
 사실 이건 Cacher의 구성요소라기 보다는 리소스에 따라 기본적으로 생성되어야 하는 것이며 watchCache 기능이 필요없는 리소스인 경우에는
-UndecoratedStorage를 통해 storage가 생성이 될텐데, 이 때에도 RawStorage는 만들어진다.
+[UndecoratedStorage](https://pkg.go.dev/k8s.io/apiserver/pkg/registry/generic#UndecoratedStorage) 를 통해 storage가 생성이 될텐데, 이 때에도 RawStorage는 만들어진다.
 생성될 때 주어진 구성을 기반으로 ETCD3Storage라는 storage backend가 만들어진다.
-ETCD3Storage 내부에는 etcd3를 위한 storage.Interface 구현체인 Store와 etcd v3 client의 session을 제공하고 관리하는 ETCD3Client가 존재하며
+ETCD3Storage 내부에는 etcd3를 위한 [storage.Interface](https://pkg.go.dev/k8s.io/apiserver@v0.23.5/pkg/storage#Interface) 구현체인 Store와 etcd v3 client의 session을 제공하고 관리하는 ETCD3Client가 존재하며
 API Server는 etcd에서 제공해주는 watch feature를 사용하기 위해 ETCD3Client를 통해 etcd와 gRPC bidirectional stream 연결을 맺고 key에 대한 변경 사항을 비동기적으로 모니터링한다.
 
 cacheListerWatcher

@@ -347,7 +347,6 @@ func (r *Reflector) Run(stopCh <-chan struct{}) {
   klog.V(3).Infof("Starting reflector %s (%s) from %s", r.expectedTypeName, r.resyncPeriod, r.name)
   wait.BackoffUntil(func() {
     if err := r.ListAndWatch(stopCh); err != nil {
-    if err := r.ListAndWatch(stopCh); err != nil {
       r.watchErrorHandler(r, err)
     }
   }, r.backoffManager, true, stopCh)
