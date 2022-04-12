@@ -140,24 +140,34 @@ Cacher의 Watchers에 등록되어 있던 모든 cacheWatcher들에게 해당 �
 
 Cacher의 구성요소들을 살펴보는 것을 끝으로 마무리하자.
 
+RawStorage
+: Low level key/value storage이다.
+사실 이건 Cacher의 구성요소라기 보다는 리소스에 따라 기본적으로 생성되어야 하는 것이며 watchCache 기능이 필요없는 리소스인 경우에는
+UndecoratedStorage를 통해 storage가 생성이 될텐데, 이 때에도 RawStorage는 만들어진다.
+생성될 때 주어진 구성을 기반으로 ETCD3Storage라는 storage backend가 만들어진다.
+ETCD3Storage 내부에는 etcd3를 위한 storage.Interface 구현체인 Store와 etcd v3 client의 session을 제공하고 관리하는 ETCD3Client가 존재하며
+API Server는 etcd에서 제공해주는 watch feature를 사용하기 위해 ETCD3Client를 통해 etcd와 gRPC bidirectional stream 연결을 맺고 key에 대한 변경 사항을 비동기적으로 모니터링한다.
+
+cacheListerWatcher
+: ListerWatcher는 List() 및 Watch()를 포함하는 인터페이스 객체이다.
+먼저 모든 항목을 나열하고 호출 순간의 resource version을 가져온 다음 이를 사용해 watch를 시작한다.
+
+reflector
+: ListerWatcher를 사용해 Store로부터 전달받은 event(transformer와 versioner에서 거쳐옴)를 type에 따라 분류하고 watchCache에 전달한다.
+Object가 추가되거나 삭제될 때에는 Added/Deleted로 분류되며, Modified는 여러 변경 사항이 결합된 이벤트가 호출될 수 있으므로
+이것을 단일 변경 사항에 대한 이벤트라고 볼 순 없다.
+
 watchCache
-: watchCache는 Store 인터페이스를 구현하며 apiServer가 etcd에서 감시하는 객체를 저장하기 위해 사용되는 cache이다.
+: watchCache는 Store 인터페이스를 구현하며 API Server가 etcd에서 감시하는 객체를 저장하기 위해 사용되는 cache이다.
 
 watchers
 : watchers(indexedWatchers)는 map이며 map의 value type은 cacheWatcher이다.
 kubelet, kube-scheduler와 같은 client가 특정 유형의 감시 리소스가 필요할 때 apiServer에 watch 요청을 시작하고,
 apiServer는 cacheWatcher를 생성한다.
-cacheWatcher는 watch.Interface의 구현체이며, thread-safe하지 않다. watch resource를 담당하여 http 통신을 통해 apiServer에서 client로 전달한다.
+cacheWatcher는 watch.Interface의 구현체이며, thread-safe하지 않다. watch resource를 담당하여 http 통신을 통해 API Server에서 client로 전달한다.
 
-watchCacheEvnet
+watchCacheEvent
 : watchCache를 사용하는 client에게 보내는 단일 watch event이다.
 일반적인 watch.Event에 추가로 upper layers에서 적절한 필터링을 활성화하기 위한 객체의 이전 상태(prevObject)를 포함한다.
-
-cacheListerWatcher
-: ListerWatcher는 List() 및 Watch()를 포함하는 인터페이스 객체이다.
-
-reflector
-: TBD
-
 
 <div style="text-align: center; font-weight: bold; margin-top: 100px; margin-bottom: 50px">끝.</div>
