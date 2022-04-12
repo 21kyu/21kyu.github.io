@@ -393,6 +393,7 @@ Handler를 생성할 때 `restfulListResource()` 함수를 호출하면서 watch
 이 watcher는 `watcher, isWatcher := storage.(rest.Watcher)`에서 가져오는 것으로 해당 리소스의 RESTStorage에 이미 등록된 Watcher 구현체이다.
 RESTStorage는 곧 ETCDStorage이며 ETCDStorage 내부엔 Store가 존재한다.
 이 Store는 [DryRunnableStorage](https://pkg.go.dev/k8s.io/apiserver/pkg/registry/generic/registry#DryRunnableStorage) 를 가지고 있으며,
+DryRunnableStorage 또한 wrapping하기 위한 `storage.Interface`를 가지고 있는데 여기엔
 [RESTOptions](https://pkg.go.dev/k8s.io/apiserver/pkg/registry/generic#RESTOptions) 의
 [Decorator](https://pkg.go.dev/k8s.io/apiserver/pkg/registry/generic#StorageDecorator)에 등록된 함수가 사용돼
 [UndecoratedStorage](https://pkg.go.dev/k8s.io/apiserver/pkg/registry/generic#UndecoratedStorage) 또는
