@@ -134,7 +134,7 @@ WatchResponse를 가져와 파싱하고, watchChan.incomingEventChan으로 전�
 ![etcd watcher](/images/etct-watcher.png)
 _그림 3. Etcd storage_
 
-processEvent를 톨해 etcd watcher의 이벤트를 incomingEventChan으로 받아 처리하고 그 결과를 resultChan으로 보낸다.
+processEvent를 통해 etcd watcher의 이벤트를 incomingEventChan으로 받아 처리하고 그 결과를 resultChan으로 보낸다.
 이 결과는 곧 Cacher 내부의 reflector가 수행하는 watch로 전달되어 watchCache가 받아 processEvent를 통해 이벤트를 전달하게 되고
 Cacher의 Watchers에 등록되어 있던 모든 cacheWatcher들에게 해당 이벤트를 최종적으로 전달해준다.
 
@@ -153,7 +153,7 @@ cacheListerWatcher
 먼저 모든 항목을 나열하고 호출 순간의 resource version을 가져온 다음 이를 사용해 watch를 시작한다.
 
 reflector
-: ListerWatcher를 사용해 Store로부터 전달받은 event(transformer와 versioner에서 거쳐옴)를 type에 따라 분류하고 watchCache에 전달한다.
+: ListerWatcher를 사용해 Store로부터 전달받은 event(transformer와 versioner를 거쳐옴)를 type에 따라 분류하고 watchCache에 전달한다.
 Object가 추가되거나 삭제될 때에는 Added/Deleted로 분류되며, Modified는 여러 변경 사항이 결합된 이벤트가 호출될 수 있으므로
 이것을 단일 변경 사항에 대한 이벤트라고 볼 순 없다.
 

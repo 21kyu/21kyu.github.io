@@ -14,7 +14,7 @@ render_with_liquid: false
 
 ## Prelude
 
-Go의 스케줄러 내부가 돌아가는 메커니즘(mechanics)과 의미론(semantics)에 대한 이해를 제공할 3부작 시리즈의 첫번째 게시물이다.
+Go의 스케줄러 내부가 돌아가는 메커니즘(mechanics)과 의미(semantics)에 대한 이해를 제공할 3부작 시리즈의 첫번째 게시물이다.
 첫번째 게시물은 운영체제 스케줄러에 중점을 둔다.
 
 **3부작**:
