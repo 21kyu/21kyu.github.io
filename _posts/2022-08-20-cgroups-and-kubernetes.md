@@ -606,6 +606,8 @@ QoS가 BestEffort이므로 oom_score_adj는 1000으로 설정되어 있다.
 /proc/616691/oom_score_adj:1000
 ```
 
+시간 날 때 이어서 정리..
+
 ## Burstable
 
 ## Guaranteed
